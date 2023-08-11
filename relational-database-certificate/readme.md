@@ -173,4 +173,123 @@ ALTER TABLE character_actions ADD PRIMARY KEY(character_id, action_id);
 ```
 
 - so both of these ids are gonna have multiple rows for each, so neither is unique, both they'll never conflict being in a single row as same id for both
+- this is how we inserted actions and character ids into the character_actions TABLE:
+
+```SQL
+INSERT INTO character_actions(character_id,action_id) VALUES
+(7,1),(7,2),(7,3);
+-- same as Daisy, only changing 7 into 6
+```
+
+- look at the hard work I'v done:
+
+```sql
+\d
+mario_database=>                         List of relations
++--------+-----------------------------+----------+--------------+
+| Schema |            Name             |   Type   |    Owner     |
++--------+-----------------------------+----------+--------------+
+| public | actions                     | table    | freecodecamp |
+| public | actions_action_id_seq       | sequence | freecodecamp |
+| public | character_actions           | table    | freecodecamp |
+| public | characters                  | table    | freecodecamp |
+| public | characters_character_id_seq | sequence | freecodecamp |
+| public | more_info                   | table    | freecodecamp |
+| public | more_info_more_info_id_seq  | sequence | freecodecamp |
+| public | sounds                      | table    | freecodecamp |
+| public | sounds_sound_id_seq         | sequence | freecodecamp |
++--------+-----------------------------+----------+--------------+
+(9 rows)
+-- see also the characters we started after creating the mario_database
+SELECT * FROM characters ORDER BY character_id;
+mario_database=>                                
++--------------+--------+------------------+----------------+
+| character_id |  name  |     homeland     | favorite_color |
++--------------+--------+------------------+----------------+
+|            1 | Mario  | Mushroom Kingdom | Red            |
+|            2 | Luigi  | Mushroom Kingdom | Green          |
+|            3 | Peach  | Mushroom Kingdom | Pink           |
+|            4 | Toad   | Mushroom Kingdom | Blue           |
+|            5 | Bowser | Koopa Kingdom    | Yellow         |
+|            6 | Daisy  | Sarasaland       | Orange         |
+|            7 | Yoshi  | Dinosaur Land    | Green          |
++--------------+--------+------------------+----------------+
+(7 rows)
+
+-- see the more_info table
+
+SELECT * FROM more_info;
+mario_database=>                                      
++--------------+------------+--------------+--------------+--------------+
+| more_info_id |  birthday  | height_in_cm | weight_in_kg | character_id |
++--------------+------------+--------------+--------------+--------------+
+|            1 | 1981-07-09 |          155 |         64.5 |            1 |
+|            2 | 1983-07-14 |          175 |         48.8 |            2 |
+|            3 | 1985-10-18 |          173 |         52.2 |            3 |
+|            4 | 1950-01-10 |           66 |         35.6 |            4 |
+|            5 | 1990-10-29 |          258 |        300.0 |            5 |
+|            6 | 1989-07-31 |              |              |            6 |
+|            7 | 1990-04-13 |          162 |         59.1 |            7 |
++--------------+------------+--------------+--------------+--------------+
+(7 rows)
+```
+
+- to see the real data from more_info, in character_id column we use join on, getting data from both tables
+
+```sql
+SELECT columns FROM table_1 FULL JOIN table_2 ON table_1.primary_key_column = table_2.foreign_key_column;
+```
+
+- real example:
+
+```sql
+SELECT * FROM characters FULL JOIN more_info ON characters.character_id = more_info.character_id;
+-- this is called a one-to-one relationship as learned above
+-- another example with sounds table joined to characters one
+SELECT * FROM characters FULL JOIN sounds ON characters.character_id = sounds.character_id;
+```
+
+- a real world example of seeing many-to-many one-to-many relationship
+
+```sql
+-- explaining the theory part:
+SELECT columns FROM junction_table
+FULL JOIN table_1 ON junction_table.foreign_key_column = table_1.primary_key_column
+FULL JOIN table_2 ON junction_table.foreign_key_column = table_2.primary_key_column;
+
+-- the example
+SELECT * FROM character_actions
+FULL JOIN characters ON character_actions.character_id = characters.character_id FULL JOIN actions ON character_actions.action_id = actions.action_id;
+-- that was a lot🥵
+```
+
+
+
+- Congratulations, finally; now let's get more crazy with next course😃
+
+---
+---
+
+## 3. Celestial Bodies Database
+
+- For this project, you will build a database of celestial bodies using PostgreSQL.
+- useful notices:
+
+```txt
+If you leave your virtual machine, your database may not be saved. You can make a dump of it by entering pg_dump -cC --inserts -U freecodecamp universe > universe.sql in a bash terminal (not the psql one). It will save the commands to rebuild your database in universe.sql. The file will be located where the command was entered. If it's anything inside the project folder, the file will be saved in the VM. You can rebuild the database by entering psql -U postgres < universe.sql in a terminal where the .sql file is.
+
+If you are saving your progress on freeCodeCamp.org, after getting all the tests to pass, follow the instructions above to save a dump of your database. Save the universe.sql file in a public repository and submit the URL to it on freeCodeCamp.org.
+```
+
+- I created a `universe.sql` in my machine instead of that boring issue
+- all created data is inside that file, I finished this challenge at 5:25 PM 8/11/2023
+
+---
+
+## 4. Bash scripts combine terminal commands combined to programming
+
+220 lessons 🥵, Bash scripts combine terminal commands and logic into programs that can execute or automate tasks, and much more.
+
+In this 220-lesson course, you will learn more terminal commands and how to use them within Bash scripts by creating five small programs.
+
 - 
