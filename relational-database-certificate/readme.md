@@ -292,4 +292,259 @@ If you are saving your progress on freeCodeCamp.org, after getting all the tests
 
 In this 220-lesson course, you will learn more terminal commands and how to use them within Bash scripts by creating five small programs.
 
+- we'll create a file `project`, and `touch questionnaire.sh` in it
+- this file is for containing commands inside, first command is
+
+### First Project
+
+```sh
+echo hello questionnaire
+```
+
+- to run that command type: `sh fileName.ext`, sh stands for shell
+- sh uses the shell interpreter, so run the scripting with bash, `bash` => `bourne-again shell`, as `bash questionnaire.sh`
+- to see where the bash is interpreting from type: `which bash`
+- to tell our program where the shell is, add this at the top of the command file:
+
+```sh
+shebang #!<path_to_interpreter>
+# as this, checked by freeCodeCamp tests:
+#!/bin/bash
+```
+
+- after that, instead of using sh or bash, we can execute the file by typing its name precede by ./ as `./questionnaire.sh`, but it'll deny with lack of permissions
+- the reason is because privileges are not including x -> execute, you learned before what 777 means; use `ls -l` to check permissions
+- our file is: `-rw-r--r--`, I think they're admin, user, others
+- enter `chmod +x questionnaire.sh` in the terminal, to give all -🤪- execution
+
+now, you're able to execute ./questionnaire.sh
+
+- you can even add the command `ls -l` into the file. that's awesome
+
+bash has variables, functions, and what not
+
+- creating variables is similar to dotenv;
+- `VARIABLE_NAME=VALUE` 🔴 you're not able to add spaces around `=` sign, when needing spaces, include the code with double quotes
+- to use variables add `$VARNAME`, putting dollar sign in front of it
+- to accept input from users use: `read` command as `read NAME`, then, i'll store it into that variable. so, it wasn't set before, the `NAME`;
+
+the file is as:
+
+```sh
+#!/bin/bash
+QUESTION1="What's your name?"
+echo $QUESTION1
+read NAME
+echo Hello $NAME.
+```
+
+- it'll output the input that user adds when you run the file: ./questionnaire.sh
+- we create a tile with two ~~ as, it might be a personal style😃 from the monitor
+echo ~~ Questionnaire ~~
+- --help with echo doesn't work as `echo --help`, it prints it😃
+- another helping command is `man` => manual, used as `man echo`
+- as known: `ctrl + c` stops the running script
+- echo didn't print empty lines as -e and \n
+- to make it working add double quotes as: `echo -e "\n~~ Questionnaire ~~\n"`
+- `-e` enable the interpretation of escape sequences.
+- -e should be used each time you use `escape sequences`.
+
+First program's done, its code's:
+
+```sh
+#!/bin/bash
+echo -e "\n~~ Questionnaire ~~\n"
+QUESTION1="What's your name?"
+QUESTION2="Where are you from?"
+QUESTION3="What's your favorite coding website?"
+echo $QUESTION1
+read NAME
+echo $QUESTION2
+read LOCATION
+echo $QUESTION3
+read WEBSITE
+echo 
+echo -e "Hello $NAME from $LOCATION. I learned that your favorite coding website is $WEBSITE!"
+```
+
+### Second Project
+
+- create 2nd project with `touch countdown.sh`, in same project DIR
+- give it: `chmod +x countdown.sh`
+- to see all passed to thy script arguments do: `echo $*`, it prints empty line🤔
+- we can get arguments with their ordered place with `$<number>` as `./countdown.sh` in terminal, and setting: `echo $1` in the file.
+- to see the list of inline commands use: `help`
+- with many commands try: `help <command>` it'll return brief useful info on it, as `help if`
+- the meaning is:
+
+```sh
+if [[ CONDITION ]]
+then
+  STATEMENTS
+fi
+```
+
+- There must be spaces on the inside of the brackets ([[ ... ]]) and around the operator (==).
+- this is how countdown.sh became after adding this if condition:
+
+```sh
+#!/bin/bash
+
+# Program that counts down to zero from a given argument
+
+if [[ $1 == arg1 ]]]
+then
+  echo true
+fi
+```
+
+- try in terminal running the file with arg1 as: `./countdown arg1`, with else commands, it will return nothing
+- it doesn't work properly in my windows. that's weird
+- we should to set a default condition here, as:
+
+```sh
+if [[ CONDITION ]]
+then
+  STATEMENTS
+else
+  STATEMENTS
+fi
+```
+
+- You can compare integers inside the brackets ([[ ... ]]) of your if with `-eq` (equal), `-ne` (not equal), `-lt` (less than), `-le` (less than or equal), `-gt` (greater than), `-ge` (greater than or equal).
+- make 1st if as: `if [[ $1 -lt 5 ]]`
+- we can even ask for help with [[ ]] commands as: `help [[ expression ]]`.
+- and use: `help test`. it's good for same topic
+- use: -le stands for `<=`
+- to be able to print this command: `[[ 4 -le 5 ]]` we need to use `$?` => `exit status`
+- so do this in terminal, each line is as pressing enter:
+
+```sh
+[[ 4 -le 5 ]]
+$?
+```
+
+- it returns 0. in their syntax they said: `the exit status of 0 means it was true`
+- so, 0 == true. 1 == false. that's weird. not same as JS. the real meaning is: 🔴 `app had zero errors` 🔴
+- to separate commands on same line use `semicolon`. as `[[ 4 -ge 5 ]]; echo $?`
+- in bash: the exit status of `127` means `command not found`. as trying with `bad_command; $?`
+- if you use `ls; $?` it'll return 0. and get executed. will list output!
+- this `ls -y; $?` returns 2 so it says -y flag doesn't work with ls
+- to check if a file exists as in `help test`. use `[[ [[ -a countdown.sh ]]; echo $? ]]`. 0 not bugs. 😋
+- we can ask for help with [[ expression ]] as `help [[ expression ]]` or `help [[`
+- this is used after seeing its power, `[[ -x countdown.sh && 5 -le 4 ]]; echo $?`. because && it returns a whole error: 1. if || is used. it'll return 0
+
+now come to looping:
+
+```sh
+for (( i = 10; i > 0; i-- ))
+do
+  echo $i
+done
+```
+
+- here is our app after inserting the `2nd in help` for loop:
+
+```sh
+#!/bin/bash
+
+# Program that counts down to zero from a given argument
+
+if [[ $1 -gt 0 ]]
+then
+  for (( i = $1; i > 0; i-- ))
+  do
+    echo $i
+  done
+else
+  echo Include a positive integer as the first argument.
+fi
+```
+
+- run the script with a number as: 10, `./countdown.sh 10`
+- to use time learn as: `help`. not seen?, use `ls /` to get more `built-in commands`.
+- we can see the `bin` => binary. check it with `ls /bin`. these aren't built-in commands
+- `bash` is for using `shebang`, learn more about `sleep`, we'll use it for pausing time in looping
+- use `man sleep` to do so.
+- use `sleep <seconds>`
+
+```sh
+: '
+  this is a multiple comment 
+  approach
+'
+```
+
+- see the final result of the file. I changed
+- this is the pseudo code of while loops in bash:
+
+```sh
+while [[ CONDITION ]]
+do
+  STATEMENTS
+done
+```
+
+- to subtract in while loops use `(( ... ))` as `(( I-- ))`
+
+### Third Project
+
+bingo number generator
+
+```sh
+touch bingo.sh
+chmod +x bingo.sh
+ls -l # to see it
+```
+
+- add the shebang as, after checking `which bash`
+
+```sh
+#!/bin/bash
+```
+
+- we need sth that helps us generating random numbers between 1-75, check environment variables, command: `printenv` to see them
+- it's a lot of information, I admit, so it's extremely useful knowing its parts🔴
+- they're predefined and loaded with each shell, mentor says!
+- check `LANG`, we'll use it! as `echo $LANG`
+- View all variables in the shell with `declare -p`. `-p` stands for `print`
+- this list included all env variables, even what you've created in current shell
+- this one is important to know: `RANDOM` print it, `echo $RANDOM`, and voilà ![Alt text](image.png)
+- change the number var into its value as: `NUMBER=$RANDOM`
+- highest number that random can generate is: `32767` not 65535, as signed in 16-bit, to determine its maximum value use `echo $((2 ** 15 - 1))`. this line isn't in the course😃
+- to make it in our tended range we use the modulus operator `%`, after it with our n, as: `$RANDOM%75`
+- to see what we can do with `(( ))` use the command: `help let`
+- we can easily use: `(( I += 10 ))` to increment 10 each time
+- using `$` before (()), will output results with an error message: as `bash: 16: command not found` with `$(( I + 4 ))`
+- print it with echo to get rid of that error message: `echo  $(( I + 4 ))`
+- in the practices we did this: `echo $(( J * 5 + 25 ))`. I know nothing why🤔
+- the idea is about that `(( ))` is set for isolate its arguments from saving collected data. `Output nothing`
+- see
+
+```md
+# So, as a reminder, (( ... )) will perform a calculation or operation and output nothing. $(( ... )) will replace the calculation with the result of it. You made a few variables in this shell, view them with declare -p.
+```
+
+- to view created variables use `declare -p VAR` as putting `I` in place of VAR
+- using `declare -p RANDOM` will generate different results each time
+- they asked to type: `echo $(( RANDOM % 75 ))`. The concerning issue is that it puts many zeros on left.🥵
+- they directly showed the solution, it's by adding 1 in the calculating parentheses, as `echo $(( RANDOM  % 75 + 1 ))`
+- we can if statements with (( ... )), not only with square [[ ... ]].
+- else if is similar to python, `elif`
+- see the file `bingo.sh` to view the ability to use both of (( ... )) and [[ ... ]] together
+
+### Fourth Project
+
+- we'll build a fortune project.
+
+```sh
+touch fortune.sh
+chmod +x fortune.sh
+```
+
+- arrays in bash are having this syntax: `ARR=("a" "b" "c")`
+- and invoking is as: `echo ${ARR[1]}`
+- to print the whole array we use either `*` or `@`, as `echo ${ARR[*]}`
+- see the array with `declare -p ARR`
+- it prints `declare -a`, -a stands for array
 - 
