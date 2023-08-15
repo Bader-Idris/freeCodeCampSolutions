@@ -916,3 +916,7 @@ SELECT DISTINCT(course) FROM students RIGHT JOIN majors USING(major_id) INNER JO
 - Part 2, done in 8/14/2023
 
 ## 7. World Cup Database
+
+- at the end of the course, we'll need to provide these three files `worldcup.sql`,`insert_data.sh`, and `queries.sh`
+- I'll put them all in a nested folder called: `world-cup`.
+- 
