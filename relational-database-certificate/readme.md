@@ -263,8 +263,6 @@ FULL JOIN characters ON character_actions.character_id = characters.character_id
 -- that was a lot🥵
 ```
 
-
-
 - Congratulations, finally; now let's get more crazy with next course😃
 
 ---
@@ -547,4 +545,374 @@ chmod +x fortune.sh
 - to print the whole array we use either `*` or `@`, as `echo ${ARR[*]}`
 - see the array with `declare -p ARR`
 - it prints `declare -a`, -a stands for array
-- 
+- 🔴 Notice: there ain't any comma in between!🔴
+- to get a random number between 0 and 5 we use: RANDOM % 6, why 6. I don't know.
+- use `help function` in terminal, they're as ecma 5 fn(){}
+- no dollar sign needed for function. remember: bash is a scripting lang: runs 1 to (length -1)
+- see the `until` command `help until`, same as `do while looping`
+- `=~` means is substring matching? `[[ hello =~ el ]]; echo $?` => 0, zero bugs
+- we can use regExp characters, but not in ""
+- this asks if it starts with h, `^` asks for first character. `[[ "hello world" =~ ^h ]]; echo $?` => 0
+- this `^h.+d$` means: is it starting with h, and `.+`: is it having at least 1 ch, `d$` is it ending with d. -> 0
+- with vars use `$` as `[[ $VAR == "hello world" ]]; echo $?`
+- to check if string ends with ? use `\?$`, with `[[ $VAR =~ \?$ ]]; echo $?`, using `$?`, is with each matching `=~`
+
+### Fifth Project
+
+- Program to run my other four programs
+
+```sh
+touch five.sh
+chmod +x five.sh
+```
+
+- give shebang in file.sh=> `#!/bin/bash`
+- after including ./filename.sh for each project, and countdown with its argument.
+- learn more about `type`, with `help` -> `help type`
+- it appears the type of command
+- both `echo` and `read` are builtin commands. but if is a keyword. check with `type <command>`
+- `type bash` => returns the location of bash. same as `which bash` but with little explanation
+- do: `type psql`. it'll return its package location
+
+this course is done in 12:23 AM 8/13/2023. midnight? YES🦉
+
+## 5. Building a Student DB in SQL: Part 1
+
+Initially they provide two csv files, courses and students
+
+- put these two files inside SQL DB: 🤪
+- CS students with their courses. I put these files in this file's location/studentsDB
+
+Run psql as in prior DB courses: `psql --username=freecodecamp --dbname=postgres`
+
+- create db students
+- 4 tables: 1- students with info. 2- majors 3- courses 4- viewing what courses in each majors!
+- look at `./students_part1.sql` file.
+- after creating the tables and adding a row for each at a time. it's tedious to do so for all.
+- so, we'll `split the terminal`, in vsc click on terminal in the upper nav -> `split terminal` or `ctrl + shift + 5`
+- then, create a file for inserted data: `touch insert_data.sh` in `project` DIR.
+- that's awesome using split terminal => `...terminals together`
+- give permissions to file.
+- add shebang. rest is in the file!
+- we'll use `cat <filename>` for `printing` whole files. inside our scripting_file.
+- using this shell while read with its followed variable will put all separated strings into these two variables:
+
+```sh
+cat courses.csv | while read MAJOR COURSE
+do
+  echo $MAJOR
+done
+# and here we only print the majors, as you can see
+# but the problem is that it only prints first word 🔴 for each
+```
+
+- There's a default `IFS` variable in bash. `IFS` stands for **"Internal Field Separator"**. View it with `declare -p IFS`
+- it's for determining word boundaries; It defaults to `spaces`, `tabs`, and `new lines`.
+- set it to comma as `IFS=","`; between `while` and `read` commands as: `while IFS="," read`
+- instead of printing it. we'll insert into the database directly!
+- with scripting we can run a single command and quit in psql, do the following:
+
+```sh
+PSQL="psql -X --username=freecodecamp --dbname=students --no-align --tuples-only -c"
+```
+
+- `-c` is for running the script once and quit.
+- to query our psql `prompt` we do this: `$($PSQL "<query_here>")`.
+- code in () will run in a subShell
+- instead of using the original file: `courses.csv`, we'll cp a new one for testing purposes
+- in testing file remove all but 5 lines, **leave an empty line afterwards**
+- do `cp courses.csv courses_test.csv`
+- change the file read by cat to new one. in the scripting file.
+- after the changes, run the scripting file.
+- we inserted the column name. so we can use the deletion command in shell.
+- `TRUNCATE`. by using it with table's name. postgreSQL will delete all data inside. as
+
+```sql
+TRUNCATE majors;
+-- it can't because of having constraints
+```
+
+- we need to delete this row from all connected tables, they're 2 other than our major, do it by separating them with commas
+
+```sql
+TRUNCATE majors, students, majors_courses;
+-- then trunk courses.
+TRUNCATE majors_courses, courses;
+-- not only courses. because it has a fKey references to majors_courses
+```
+
+- then run the scripting file.
+- put an if $MAJOR != major. for the title.
+- we don't need to print this any more, `echo $INSERT_MAJOR_RESULT`
+- we truncate connected tables as `truncate majors_courses, students, majors;` with testing
+- we'll make the file delete the table's data dynamically. THAT'S RISKY
+- initially we make it below PSQL as:
+
+```sh
+echo $($PSQL "TRUNCATE students, majors, courses, majors_courses")
+```
+
+- after we set the insert_data.sh as:
+
+```sh
+#!/bin/bash
+
+# Script to insert data from courses.csv and students.csv into students database
+PSQL="psql -X --username=freecodecamp --dbname=students --no-align --tuples-only -c"
+echo $($PSQL "TRUNCATE students, majors, courses, majors_courses")
+cat courses_test.csv | while IFS="," read MAJOR COURSE
+do
+  if [[ $MAJOR != major ]]
+  then
+    # get major_id
+    MAJOR_ID=$($PSQL "SELECT major_id FROM majors WHERE major='$MAJOR'")
+    # if not found
+    if [[ -z $MAJOR_ID ]]
+    then
+      # insert major
+      INSERT_MAJOR_RESULT=$($PSQL "INSERT INTO majors(major) VALUES('$MAJOR')")
+      # get new major_id
+      MAJOR_ID=$($PSQL "SELECT major_id FROM majors WHERE major='$MAJOR'")
+    if [[ $INSERT_MAJOR_RESULT == "INSERT 0 1" ]]
+    then
+      echo "Inserted into majors, $MAJOR"
+    fi
+    fi
+    # get course_id
+    COURSE_ID=$($PSQL "SELECT course_id FROM courses WHERE course='$COURSE'")
+    # if not found
+    if [[ -z $COURSE_ID ]]
+    then
+      # insert course
+      INSERT_COURSE_RESULT=$($PSQL "INSERT INTO courses(course) VALUES('$COURSE')")
+      # get new course_id
+      COURSE_ID=$($PSQL "SELECT course_id FROM courses WHERE course='$COURSE'")
+      if [[ $INSERT_COURSE_RESULT == "INSERT 0 1" ]]
+      then
+        echo "Inserted into courses, $COURSE"
+      fi
+    fi
+    # insert into majors_courses
+    INSERT_MAJORS_COURSES_RESULT=$($PSQL "INSERT INTO majors_courses(major_id, course_id) VALUES($MAJOR_ID, $COURSE_ID)")
+    if [[ $INSERT_MAJORS_COURSES_RESULT == "INSERT 0 1" ]]
+    then
+      echo "Inserted into majors_courses, $MAJOR : $COURSE"
+    fi
+  fi
+done
+```
+
+- we'll cp the testing students file
+- as: `cp students.csv students_test.csv`
+- and we'll remove all but 5 and its next empty \n as in prior file
+- we're copying what we did, in same file. it's funny now. practicing what we learned
+- look at it now:
+
+```sh
+# prior code⬆️...
+cat students_test.csv | while IFS="," read FIRST LAST MAJOR GPA
+do
+  if [[ $FIRST != first_name ]]
+  then
+  # get major_id
+  # if not found
+  # set to null
+  # insert student
+  fi
+done
+```
+
+- then after all tasks. and selecting rows to see in each table. we'll remove the testing files
+- we're going to do is making our dump of DB. the `pg_dump` command does it. use: `pg_dump --help`. in my windows. it needs to be installed!
+- it puts data into a sql file. use 🔽 to create that `students.sql` file
+
+```sh
+pg_dump --clean --create --inserts --username=freecodecamp students > students.sql
+```
+
+- I put the output file besides what I created. It's tidy in a crazily approach 🤪
+
+## 6. Building a Student DB in SQL: Part 2
+
+- mentors: In this 140-lesson course, you will complete your student database while diving deeper into SQL commands.
+- we'll insert the who student.sql into our database. because it'l not existing when starting this course.
+- do this with `psql -U postgres < students.sql` command
+- we're gonna create this `student_info.sh` to sort the data info of our project;
+- do as any other `sh` file. +x and shebang
+- see the file!
+- we didn't use this before: `SELECT * FROM majors where major != 'Game Design';`
+- the majority of this course stands for teaching selection, which's been explained in postgres course with Nelson. and the great book SQL cookbook
+- we can chain a condition with one of two as `WHERE <condition_1> AND (<condition_2> OR <condition_2>)`
+- as `select * from students where last_name < 'M' and (gpa = 3.9 or gpa < 2.3);`, without () it will consider (condition31 and condition32) or condition3
+- this brings what does not have a space, as we learned before: `select * from courses where course not like '% %';`
+- order is important, you can't put `limit` before `order by` or both before `where` clause.
+- an example:
+
+```sql
+select * from students where gpa is not null order by gpa desc, first_name limit 10;
+```
+
+- look at the psuedo code of this ROUND method
+
+```sql
+ROUND(<number_to_round>, <decimals_places>)
+```
+
+- `COUNT()` is for column numbers, overlooking the nullish values
+- as you recall: using `DISTINCT` will remove duplicated results from viewing
+- we get the same results with both of these selections
+
+```sql
+select distinct(major_id) from students;
+select major_id from students group by major_id;
+```
+
+- but with `group by` we can use `aggregation fns`: `min max count etc`
+- **this was tough:**  View the unique major_id values with GROUP BY again, but see what the lowest GPA is in each of them.
+
+```sql
+SELECT major_id, MIN(gpa) FROM students GROUP BY major_id;
+```
+
+- this is another option with group by: `SELECT <column> FROM <table> GROUP BY <column> HAVING <condition>`
+- `having` clause's to be an aggregate Fn with a test, as `HAVING COUNT(*) > 0`
+- see the example:
+
+```sql
+SELECT major_id, MIN(gpa) AS min_gpa, MAX(gpa) AS max_gpa FROM students GROUP BY major_id HAVING MAX(gpa) = 4;
+```
+
+- you know aliases. not gonna explain it here!
+- this is becoming a little more complex
+
+```sql
+select major_id, count(*) as number_of_students from students group by major_id having count(*) < 8;
+```
+
+- the file `student_info.sh` is extremely useful for this Part 2 of SQL learning
+- to join use:
+
+```sql
+SELECT * FROM tb1 FULL JOIN tb2 ON tb1.fKeyColumn = tb2.fKeyColumn;
+-- as this real example one:
+SELECT * FROM students FULL JOIN majors ON students.major_id = majors.major_id;
+```
+
+- The `FULL JOIN` clause you used will include all rows from both tables, whether or not they have a row using that foreign key in the other.
+- `left join` gets only connected from Tb2 to Tb1, it joins the right to left table.
+- so, this returns all students but only connected majors with it, as majors is in the right side of our selection.
+
+```sql
+SELECT * FROM students LEFT JOIN majors ON students.major_id = majors.major_id;
+```
+
+- to convert the condition only use `RIGHT` instead of left as:
+
+```sql
+SELECT * FROM students RIGHT JOIN majors ON students.major_id = majors.major_id;
+```
+
+- using `INNER JOIN` returns only tables.rows if both tables have the fKey value connected to the other one.
+
+```sql
+SELECT * FROM students INNER JOIN majors ON students.major_id = majors.major_id;
+```
+
+- so, they're 4 `JOIN` clauses: `FULL`, `LEFT`, `RIGHT` and `INNER`.
+- some practices:
+
+```sql
+-- Try using a LEFT JOIN to show all the majors but only students that have a major.
+SELECT * FROM majors LEFT JOIN students ON majors.major_id = students.major_id;
+
+-- Next, use the appropriate join to show only students that are enrolled in a major, and only majors that have a student enrolled in it.
+SELECT * FROM students INNER JOIN majors ON students.major_id = majors.major_id;
+
+-- Try using a right join to show all students but only majors if a student is enrolled in it.
+SELECT * FROM majors RIGHT JOIN students ON majors.major_id = students.major_id;
+
+-- Use the appropriate join with the same two table to show all rows in both tables whether they have a value in the foreign key column or not.
+SELECT * FROM majors FULL JOIN students ON majors.major_id = students.major_id;
+
+-- Say you wanted to find a list of majors that students are taking. Use the most efficient JOIN to join the two tables you need. Only join the tables for now, don't use any other conditions.
+SELECT * FROM students INNER JOIN majors ON students.major_id = majors.major_id;
+
+-- Just get the column you need. without duplicates.
+SELECT DISTINCT(major) FROM students INNER JOIN majors ON students.major_id = majors.major_id;
+
+-- list of majors that students aren't taking
+SELECT * FROM students RIGHT JOIN majors ON students.major_id = majors.major_id;
+```
+
+- last joins are really difficult. go see them! especially when arriving at 83% progress
+- this is useful after mastering!🤪
+
+```sql
+SELECT first_name, last_name, major, gpa  FROM students LEFT JOIN majors ON students.major_id = majors.major_id WHERE major = 'Data Science' OR gpa >= 3.8;
+```
+
+- the mentor question are killing me! and 🚘 me 🥜
+- an example of craziness
+
+```sql
+SELECT first_name, major FROM students FULL JOIN majors ON students.major_id = majors.major_id WHERE first_name LIKE '%ri%' OR major LIKE '%ri%';
+```
+
+- look at the toughness, I got 95% near it , I even got the same results, so it's 99% 😃 without hints:
+
+```sql
+SELECT major FROM students FULL JOIN majors ON students.major_id = majors.major_id WHERE major IS NOT NULL AND (student_id IS NULL OR first_name ILIKE '%ma%') ORDER BY major;
+```
+
+- because when I was trying to select major_id when working with joins and received errors: **do this**
+- choose as an object, see: `table.major_id`, meaning: you'll have to pick it from one of both. as this:
+
+```sql
+SELECT students.major_id FROM students FULL JOIN majors ON students.major_id = majors.major_id;
+```
+
+- we can use aliases with selection itself as:
+
+```sql
+SELECT s.major_id FROM students as s FULL JOIN majors as m ON s.major_id = m.major_id;
+```
+
+- seeing s at the beginning as an alias before even arriving is awesome
+- we can use the short cut keyword `USING` to use same fKey names, a pseudo ie:
+
+```sql
+SELECT * FROM <table_1> FULL JOIN <table_2> USING(<column>);
+-- Use this method to see all the columns in the students and majors table. Don't use any aliases.
+SELECT * FROM students FULL JOIN majors USING(major_id);
+```
+
+- this pseudo code is how to join three tables instead of two:
+
+```sql
+SELECT * FROM <table_1> FULL JOIN <table_2> USING(<column>) FULL JOIN <table_3> USING(<column>)
+```
+
+- ⚠️🔴 it will count first 2 as left table when using left-right joins! 🔴⚠️
+- making it real one
+
+```sql
+SELECT * FROM students FULL JOIN majors USING(major_id) FULL JOIN majors_courses USING(major_id);
+```
+
+- we can join as many tables as we want, see:
+
+```sql
+SELECT * FROM students FULL JOIN majors USING(major_id) FULL JOIN majors_courses USING(major_id) FULL JOIN courses USING(course_id);
+```
+
+- this was really tough, and I wasn't able to get it!
+
+```sql
+-- List of unique courses, in reverse alphabetical order, that no student or 'Obie Hilpert' is taking:
+SELECT DISTINCT(course) FROM students RIGHT JOIN majors USING(major_id) INNER JOIN majors_courses USING(major_id) INNER JOIN courses USING(course_id) WHERE (first_name = 'Obie' AND last_name = 'Hilpert') OR student_id IS NULL ORDER BY course DESC;
+```
+
+- because it's too difficult practice on it [here:](https://sqlzoo.net/wiki/SELECT_from_WORLD_Tutorial)
+- Part 2, done in 8/14/2023
+
+## 7. World Cup Database
