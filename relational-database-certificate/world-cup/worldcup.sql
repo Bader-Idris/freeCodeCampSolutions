@@ -11,9 +11,9 @@ CREATE TABLE games(
   game_id SERIAL PRIMARY KEY,
   year INT NOT NULL,
   round VARCHAR(30) NOT NULL,
-  winner_goals NUMERIC(1,0) NOT NULL,
-  opponent_goals NUMERIC(1,0) NOT NULL,
+  winner_goals INT NOT NULL,
+  opponent_goals INT NOT NULL,
   -- these are foreign keys
-  winner_id INT REFERENCES teams(team_id),
-  opponent_id INT REFERENCES teams(team_id)
+  winner_id INT REFERENCES teams(team_id) NOT NULL,
+  opponent_id INT REFERENCES teams(team_id) NOT NULL
 );
