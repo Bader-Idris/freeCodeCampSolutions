@@ -919,4 +919,32 @@ SELECT DISTINCT(course) FROM students RIGHT JOIN majors USING(major_id) INNER JO
 
 - at the end of the course, we'll need to provide these three files `worldcup.sql`,`insert_data.sh`, and `queries.sh`
 - I'll put them all in a nested folder called: `world-cup`.
+
+---
+
+### **Outside the curriculum**
+
+- if you wanna print-echo some code each time the file is running you can use this lovely approach, especially when adding a password as with my local psql, because I tried making it automatically providign the password, by creating a file in the users/currentUser as `.pgpass`, but it din't work, even after giving it all permissions to execute🥵
+
+```sh
+echo "howdy" | ./five.sh
+# this might work, but I didn't try it!
+while true; do
+    echo "admin" | psql -U postgres
+    if [[ $? != 0 ]]; then
+        break
+    fi
+done
+```
+
+---
+
+- to recall the dump file after finishing the project, do this
+
+```sh
+# file exists in dir:
+# created-from-server-dump-file/
+psql -U postgres < worldcup.sql
+```
+
 - 
