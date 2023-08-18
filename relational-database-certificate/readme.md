@@ -412,7 +412,7 @@ fi
 - You can compare integers inside the brackets ([[ ... ]]) of your if with `-eq` (equal), `-ne` (not equal), `-lt` (less than), `-le` (less than or equal), `-gt` (greater than), `-ge` (greater than or equal).
 - make 1st if as: `if [[ $1 -lt 5 ]]`
 - we can even ask for help with [[ ]] commands as: `help [[ expression ]]`.
-- and use: `help test`. it's good for same topic
+- and use:🔴`help test`.🔴 it's good for same topic
 - use: -le stands for `<=`
 - to be able to print this command: `[[ 4 -le 5 ]]` we need to use `$?` => `exit status`
 - so do this in terminal, each line is as pressing enter:
@@ -943,8 +943,114 @@ done
 
 ```sh
 # file exists in dir:
+# this is how we created the dump file
+pg_dump -cC --inserts -U freecodecamp worldcup > worldcup.sq
 # created-from-server-dump-file/
 psql -U postgres < worldcup.sql
+```
+
+- worldCup challenging required project is all done & submitted in 11:09 AM 8/17/2023
+
+---
+
+## 8. Learn Advanced Bash by Building a Kitty Ipsum Translator
+<!-- بسم الله الرحمن الرحيم -->
+
+- this learning project started with two files, I've put them in its dir
+- then we created a file with little printing command: `echo hello bash > stdout.txt`
+- Notice that we used only one single `>` sign.
+- it redirected echo output,⚠️🔴 and more important overwrite its content⚠️🔴.
+- to `append to`, instead of `overwrite` we use two `-gt` signs -> `>>`.
+- using `> stdout.txt` as is, will empty the file. `one space > <fileName>`
+- using `bad_command > stderr.txt` will create the file, but not accept to write anything inside
+- our two types of output `stdout` (standard out), and `stderr` (standard error)
+- You can redirect `stderr` with `2>` as: `bad_command  2> stderr.txt`. that means, the output of bad_command went to the file stderr.txt.⚠️ this is awesome for typing the passwd on behalf of me! with psql permission🔴, and ⚠️🔴notice: nothing printed to the terminal!⚠️🔴
+- similarly we use: `1>`, as `echo hello bash 1> stdout.txt`, `stdout` and `stderr` are for output. `stdin` (standard in) is the third thing commands can use and is for getting input.`defaults to the keyboard`.
+
+- using `read` will interact with the `stdin`, when using `read NAME` stdin points to the keyboard, and sth:`babe`, using `echo $NAME` to get output.
+- now use this `echo` to output the result to the file `stdout.txt`, and redirect the `stdout` to `stdout.txt`, and overwrite it, as `echo $NAME 1> stdout.txt`, the output goes to stdout.txt without telling the terminal!
+- `IMPORTANT:` Just like you can redirect output, you can redirect `stdin` as well. Here's an example: `<command> < <filename_for_stdin>`.
+  - use this: `read NAME < name.txt`.🔴
+  - now the (standard in) is pointed to name.txt.
+  - by using `echo $NAME` after that, the variable is set to the content of the file.
+  - Another way to set the `stdin` is by using the pipe `(|)`. It will use the output from one command as input for another.
+  - Here's an example: `<command_1> | <command_2>`. This will take the `stdout` from `command_1` and use it as the `stdin` for `command_2`.
+  - real example:
+    - Task: Use this method to **echo** your name and pipe the output into the `read` command which reads your name into the `NAME` variable.
+    - RES: `echo bader | read NAME`.
+    - then print it: `echo $NAME`
+    - it doesn't appear because it ran the command in a subShell or subprocess
+    - `cat` is another command, to take input, it prints it to the `stout`: type str then press Enter, ctr + c to stop the process, which prints what you provide again
+    - `cat` can take a file name as an argument, so you can do this: `cat name.txt`
+      - here is an example: `cat < name.txt` then print it as: `echo bader | cat`
+        - its pseudo is: `<command1> | <command2>`
+- here's a full example:
+
+```sh
+touch script.sh
+chmod +x script.sh
+# shebang it, remember which bash🤓
+echo '#!/bin/bash' > script.sh
+echo 'read NAME' > script.sh
+echo 'echo Hello $NAME' > script.sh
+# that's ugly, but I'm doing to practice, you can enter the file do that inside it🤓
+echo 'bad_command' > script.sh
+# now, it takes input from (stdin) and will output to (stdout) and (stderr); run it without any input.
+./script.sh
+# now <read> is waiting for input: name => Enter
+Bader
+# it returns: ./script.sh: line 5: bad_command: command not found
+# now, use the pipe to echo the input, instead of printing both commands
+echo Bader | ./script.sh
+:'
+  /o1: Hello Bader
+  /o2: ./script.sh: line 5: bad_command: command not found
+so, it did not ask for input here.
+# redirect the stderr to stderr.txt
+'
+echo Bader | ./script.sh  2> stderr.txt
+# this is how to redirect stderr to its file, and stdout to its one. so it will appear neither stderr nor stdout 🔴⚠️this is awesome⚠️🔴
+echo Bader | ./script.sh  2> stderr.txt > stdout.txt
+```
+
+- You can redirect both the `stderr` and `stdout` by adding another redirection at the end like this: `> <filename>`. as :1013 👆
+- Run your script again, use redirection to set `name.txt` as the input. Don't redirect any of the output.
+
+```sh
+./script.sh < name.txt
+# run same, but redirect err to stderr
+./script.sh < name.txt 2> stderr.txt
+# add the stdout to them
+./script.sh < name.txt 2> stderr.txt > stdout.txt
+```
+
+- the new command to you: `wc` this can take place of `cat` command, it can shows data about file added to it
+  - as this: `27  332 1744 kitty_ipsum_1.txt` for `wc kitty_ipsum_1.txt`
+  - check manual command for help! `man wc`, it didn't work in my Windows, so I tried `wc --help`, 
+    - it stands for: `word count`, it's awesome:
+      - `wc -l` shows line length
+      - `wc -w` -> words🦑
+      - `wc -m` print the characters counts
+      - `wc -c` bytes
+      - `27  332 1744 kitty_ipsum_1.txt` => `-l -w -c` in order
+      - some characters are more than one byte!
+- task: Use `cat` to pipe the content of the file as the input of the `wc` command to see if the output is the same.
+
+```sh
+# answer:
+cat kitty_ipsum_1.txt | wc
+# it only printed the numbers without fileName, this time!
+# code above output is similar, but with fewer spaces as:
+wc < kitty_ipsum_1.txt
+# then we add this line within kitty_info.txt as:
+echo -e "\nNumber of lines:" >> kitty_info.txt
+```
+
+- with this command we read the content of kitty_ipsum_1.txt by `cat`, then pipe the line length by wc -l into the other file, kitty_info.txt
+
+```sh
+cat kitty_ipsum_1.txt | wc -l >> kitty_info.txt
+# so, the kitty_info.txt will have a new line with line length: 27
 ```
 
 - 

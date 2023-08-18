@@ -27,7 +27,7 @@ style="color: cyan;">freeCodeCamp.org</a>.
 
 ---
 
-- Complete the tasks below <!-- ✅ -->
+- Complete the tasks below ✅
   - You should create a database named `worldcup` ✅
   - You should **connect to your worldcup database** and then create `teams` and `games` tables ✅
   - Your `teams` table should have a `team_id` column that is a type of `SERIAL` and is the primary key, and a `name` column that has to be `UNIQUE` ✅
