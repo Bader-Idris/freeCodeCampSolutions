@@ -1,20 +1,20 @@
 # this course is built of 14 section
 
 - It starts from building a boilerplate website by bash. [see the curriculum](https://www.freecodecamp.org/learn/relational-database/#learn-git-by-building-an-sql-reference-object)
-- 1. Learn Bash by Building a Boilerplate
-- 2. Learn Relational Databases by Building a Mario Database
-- 3. Celestial Bodies Database
-- 4. Learn Bash Scripting by Building Five Programs
-- 5. Learn SQL by Building a Student Database: Part 1
-- 6. Learn SQL by Building a Student Database: Part 2
-- 7. World Cup Database
-- 8. Learn Advanced Bash by Building a Kitty Ipsum Translator
-- 9. Learn Bash and SQL by Building a Bike Rental Shop
-- 10. Salon Appointment Scheduler
-- 11. Learn Nano by Building a Castle
-- 12. Learn Git by Building an SQL Reference Object
-- 13. Periodic Table Database
-- 14. Number Guessing Game
+- 1. *Learn Bash by Building a Boilerplate*
+- 2. *Learn Relational Databases by Building a Mario Database*
+- 3. *Celestial Bodies Database*
+- 4. *Learn Bash Scripting by Building Five Programs*
+- 5. *Learn SQL by Building a Student Database: Part 1*
+- 6. *Learn SQL by Building a Student Database: Part 2*
+- 7. *World Cup Database*
+- 8. *Learn Advanced Bash by Building a Kitty Ipsum Translator*
+- 9. *Learn Bash and SQL by Building a Bike Rental Shop*
+- 10. *Salon Appointment Scheduler*
+- 11. *Learn Nano by Building a Castle*
+- 12. *Learn Git by Building an SQL Reference Object*
+- 13. *Periodic Table Database*
+- 14. *Number Guessing Game*
 
 ---
 
@@ -1034,7 +1034,7 @@ echo Bader | ./script.sh  2> stderr.txt > stdout.txt
       - `wc -c` bytes
       - `27  332 1744 kitty_ipsum_1.txt` => `-l -w -c` in order
       - some characters are more than one byte!
-- task: Use `cat` to pipe the content of the file as the input of the `wc` command to see if the output is the same.
+- **Task:** Use `cat` to pipe the content of the file as the input of the `wc` command to see if the output is the same.
 
 ```sh
 # answer:
@@ -1046,7 +1046,7 @@ wc < kitty_ipsum_1.txt
 echo -e "\nNumber of lines:" >> kitty_info.txt
 ```
 
-- with this command we read the content of kitty_ipsum_1.txt by `cat`, then pipe the line length by wc -l into the other file, kitty_info.txt
+- with this command we read the content of `kitty_ipsum_1.txt` by `cat`, then pipe the line length by wc -l into the other file, `kitty_info.txt`
 
 ```sh
 cat kitty_ipsum_1.txt | wc -l >> kitty_info.txt
