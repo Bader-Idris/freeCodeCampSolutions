@@ -1046,11 +1046,144 @@ wc < kitty_ipsum_1.txt
 echo -e "\nNumber of lines:" >> kitty_info.txt
 ```
 
-- with this command we read the content of `kitty_ipsum_1.txt` by `cat`, then pipe the line length by wc -l into the other file, `kitty_info.txt`
+- with this 👇 command we read the content of `kitty_ipsum_1.txt` by `cat`, then pipe the line length by wc -l into the other file, `kitty_info.txt`
 
 ```sh
 cat kitty_ipsum_1.txt | wc -l >> kitty_info.txt
 # so, the kitty_info.txt will have a new line with line length: 27
 ```
 
-- 
+🔴🔴🔴🔴🔴🔴🔴🔴🔴🔴🔴🔴🔴🔴
+what's after this line's not been tested, because of the stupidity of server running the code. so I'll do it manually, then see the hint's solution.
+**check line 605 in TUTORIAL.md**
+might happen with next project as well, until we see what they're gonna do with this crazy bug!
+🔴🔴🔴🔴🔴🔴🔴🔴🔴🔴🔴🔴🔴🔴
+
+- print: -e "\nNumber of words:" into kitty_info.txt.
+- I do:
+
+```sh
+echo -e "\nNumber of words:" >> kitty_info.txt
+# ✅
+# next is to send words count with same prior code but changing the flag into the word one, -w ✅
+cat kitty_ipsum_1.txt | wc -w >> kitty_info.txt
+```
+
+- now do the number of characters, print the title then the command, easy, isn't it?
+
+```sh
+echo -e "\nNumber of characters:" >> kitty_info.txt
+
+#this is correct, but not what mentors what!👇
+cat kitty_ipsum_1.txt | wc -m >> kitty_info.txt
+# Use the redirection method as the input for the `wc` command this time instead of the piping method.
+# ie: <command> < <input_filename> >> <output_filename>
+wc -m < kitty_ipsum_1.txt >> kitty_info.txt
+```
+
+- we can search for a word pattern using: `grep`, when you search for a 'meow' it'll return lines with that pattern, pseudo is: `grep '<pattern>' <filename>`, as:
+
+```sh
+grep 'meow' kitty_ipsum_1.txt
+# some outputs
+:'
+hide from vacuum cleaner meow for catnip and act crazy steal
+shirt howl or gimme attention meow bye and eat grass, meow, and
+i stare at it i meow at it i do a wiggle come here birdy ears
+'
+```
+
+- learn more about grep with its manual as `man grep`, my git bash doesn't accept it, it does with: `grep --help`
+- it's more useful and lovelier using `--color` flag with `grep`, see:
+
+```sh
+grep --color 'meow' kitty_ipsum_1.txt
+# what's sincerely lovelier is using -n with that, for getting all line numbers with our command:
+grep -n --color 'meow' kitty_ipsum_1.txt
+# or, 👇 is what mentors are providing, but both works
+grep --color -n 'meow' kitty_ipsum_1.txt
+```
+
+- to see how many times those two words appear we use the seems to be regExp pattern with the word as: `meow[a-z]*`, check:
+
+```sh
+grep --color 'meow[a-z]*' kitty_ipsum_1.txt
+# they're 7, but we don't see anything that counts, so we use the flag -c as:
+grep -c 'meow[a-z]*' kitty_ipsum_1.txt
+# it counts lines per FILE
+```
+
+- it is the flag: `-o` that returns cutted out pattern
+
+```sh
+grep -o 'meow[a-z]*' kitty_ipsum_1.txt
+```
+
+- now, we can use the `wc` method to get its count, with pipe as:
+
+```sh
+grep -o 'meow[a-z]*' kitty_ipsum_1.txt | wc -l
+# it returns how many words👌, for printed lines, I tested -w, as for words and it words here!
+```
+
+- append that to kitty_info.txt
+
+```sh
+grep -o 'meow[a-z]*' kitty_ipsum_1.txt | wc -l >> kitty_info.txt
+# then add this
+echo -e "\nLines that they appear on:" >> kitty_info.txt
+```
+
+- how to get only line numbers? check the manual!
+
+```sh
+# nothing appears! 😒 ugly helping docks 🤪
+```
+
+- we can use the command: `sed` which replaces text,
+- `sed` can replace text like this: `sed 's/<pattern_to_replace>/<text_to_replace_it_with>/' <filename>`. it defaults to output to `stdout`
+- use it to replace r in `name.txt > freeCodeCamp` to be `2` becomes: `f2eeCodeCamp`, do this:
+
+```sh
+sed 's/r/2/' name.txt
+```
+
+- now: replace `free` with `f233` with same method:
+
+```sh
+sed 's/free/f233/' name.txt
+# try it with replacing: 'freecodecamp' to 'f233C0d3C@mp'.
+sed 's/freecodecamp/f233C0d3C@mp/' name.txt
+# it didn't replace anything, because of the lack of tended string to be replaced
+```
+
+- because it didn't replace it, we can use regExp flags as: gim as we know, after the last slash
+- ignore cases with its regExp flag:
+
+```sh
+sed 's/freecodecamp/f233C0d3C@mp/i' name.txt
+# it only replace the terminal results for now!
+# use same code but redirect its **input** this time
+sed 's/freecodecamp/f233C0d3C@mp/i' < name.txt
+```
+
+- mentors wanted to use `cat` and `pipe` method to set the input for `sed` cm.
+
+```sh
+cat name.txt | sed 's/freecodecamp/f233C0d3C@mp/i'
+# It didn't change text inside the name.txt file.
+```
+
+- We can use `sed` to each line in that output with just line numbers, to match the first digit it finds on each line, and replace it with `1` as:
+
+```sh
+grep -n 'meow[a-z]*' kitty_ipsum_1.txt | sed 's/[0-9]/1/'
+```
+
+- to make it matches one or more, we use the regExp pattern `[0-9]+` on behalf of prior one.
+
+```sh
+grep -n 'meow[a-z]*' kitty_ipsum_1.txt | sed 's/[0-9]+/1/'
+```
+
+-
