@@ -1186,4 +1186,329 @@ grep -n 'meow[a-z]*' kitty_ipsum_1.txt | sed 's/[0-9]/1/'
 grep -n 'meow[a-z]*' kitty_ipsum_1.txt | sed 's/[0-9]+/1/'
 ```
 
--
+- that didn't replace anything! **check its manual**
+- we want the extended regular expressions, which has `-E`, add it to thy prior regExp
+
+```sh
+grep -n 'meow[a-z]*' kitty_ipsum_1.txt | sed -E 's/[0-9]+/1/'
+# so, its job is to change the -n lines into our tendency, looks like it's to make each line returns the word count
+```
+
+- we need to `capture` our numbers, so, we use this pattern with `sed`. `'s/([0-9]+)/\1/'`
+
+```sh
+grep -n 'meow[a-z]*' kitty_ipsum_1.txt | sed -E 's/([0-9]+)/\1/'
+# now, we need to add .* to our sed expression, so it matches everything, captures the numbers, and replaces everything with the captured numbers. as:
+grep -n 'meow[a-z]*' kitty_ipsum_1.txt | sed -E 's/([0-9]+).*/\1/'
+# it's finally useful now, getting only the lines that has meow patterns. 🥵
+```
+
+- now add that craziness to `kitty_info.txt`
+
+```sh
+grep -n 'meow[a-z]*' kitty_ipsum_1.txt | sed -E 's/([0-9]+).*/\1/' >> kitty_info.txt
+# easy now 😆
+```
+
+- now, we'll get info about words that starts with `cat` 🐱
+
+```sh
+grep --color 'cat[a-z]*' kitty_ipsum_1.txt
+```
+
+- print this in info file:
+
+```sh
+echo -e "\nNumber of times cat, cats, or catnip appears:" >> kitty_info.txt
+```
+
+- we need to redo the number checking with `grep` and `sed` for this pattern
+
+```sh
+# firstly to see only matching words
+grep -o 'cat[a-z]*' kitty_ipsum_1.txt
+# then pipe the output of their count:
+grep -o 'cat[a-z]*' kitty_ipsum_1.txt | wc -l
+# add that into info file
+grep -o 'cat[a-z]*' kitty_ipsum_1.txt | wc -l >> kitty_info.txt
+# then print this
+echo -e "\nLines that they appear on:" >> kitty_info.txt
+# then insert the number of their lines
+grep -n 'cat[a-z]*' kitty_ipsum_1.txt | sed -E 's/([0-9]+).*/\1/' >> kitty_info.txt
+```
+
+- now: we'll work on second ipsum kitty file😒
+- give it a title in same info file, boy
+
+```sh
+echo -e "\n\n~~ kitty_ipsum_2.txt info ~~" >> kitty_info.txt
+echo -e "\nNumber of lines:" >> kitty_info.txt
+cat kitty_ipsum_2.txt | wc -l >> kitty_info.txt
+echo -e "\nNumber of words:" >> kitty_info.txt
+# use the redirection instead of the pipe method for its input
+wc -w < kitty_ipsum_2.txt >> kitty_info.txt
+echo -e "\nNumber of characters:" >> kitty_info.txt
+wc -m < kitty_ipsum_2.txt >> kitty_info.txt
+# see the variations of 'meow' with grep with its colors
+grep --color 'meow[a-z]*' kitty_ipsum_2.txt # same number as prior file
+echo -e "\nNumber of times meow or meowzer appears:" >> kitty_info.txt
+# don't forget using -o for only matching, not -n for line-number
+grep -o 'meow[a-z]*' kitty_ipsum_2.txt | wc -l >> kitty_info.txt
+echo -e "\nLines that they appear on:" >> kitty_info.txt
+grep -n 'meow[a-z]*' kitty_ipsum_2.txt | sed -E 's/([0-9]+).*/\1/' >> kitty_info.txt
+# remember sed replaces the matched into numbers with this example 👆
+```
+
+### creating a script file for prior kitty issues transforming into doggy ones🐶
+
+- we'll replaces all kitty related words into doggy, for doggy people, to not make them pissed off, [WOW!](image-1.png)
+- do general creation issues:
+
+```sh
+touch translate.sh
+chmod +x translate.sh
+# shebang
+echo '#!/bin/bash' >> translate.sh
+```
+
+- the file needs to read from `stdin` as input.
+- we'll need to catch the first argument passed to the script.
+
+```sh
+echo -e '\ncat $1' >> translate.sh
+```
+
+- to test it with kitty_ipsum_1.txt as an argument do:
+
+```sh
+./translate.sh kitty_ipsum_1.txt
+# this is redirection to print the file👇
+./translate.sh < kitty_ipsum_1.txt
+```
+
+- Try the `cat` and pipe method.
+
+```sh
+cat kitty_ipsum_1.txt | ./translate.sh
+# I don't see any impaction for that!![Alt text](image-2.png)
+# the idea is that kitty file is the $1 for the translate.sh✅
+```
+
+- in script file: `translate.sh` pipe the input into a `sed` that replaces `catnip` with `dogchow` using `sed` method.
+- I didn't ace this one! 😵🔴
+- **the file translate.sh should be as this:**
+
+```sh
+#!/bin/bash
+
+cat $1 | sed 's/catnip/dogchow/'
+```
+
+- now we run the script with kitty_ipsum_1.txt as the argument, and see if it uses sed method
+
+```sh
+./translate.sh kitty_ipsum_1.txt
+# it does work
+```
+
+- now pipe its results to a grep with its colors:
+
+```sh
+./translate.sh kitty_ipsum_1.txt | grep --color 'dogchow'
+# to make sure they're replaced, test the file by changing dogchow to catnip
+```
+
+- to replace many patterns separate each with a semicolon as: `sed 's/<pattern_1>/<replacement_1>/; s/<pattern_2>/<replacement_2>/'`, but it's important to notice that all are inside the single quotes.
+- now, make the file changes two patterns as:
+
+```sh
+# shebang
+
+cat $1 | sed 's/catnip/dogchow/; s/cat/dog/'
+```
+
+- now, search using regExp as:
+
+```sh
+./translate.sh kitty_ipsum_1.txt | grep --color 'dog[a-z]*'
+# test prior with
+$ ./translate.sh kitty_ipsum_1.txt | grep --color 'cat[a-z]*' # found nothing! that's 👌
+```
+
+- add a thrid pattern `meow` with `woof`
+
+```sh
+# shebang
+
+cat $1 | sed 's/catnip/dogchow/; s/cat/dog/; s/meow/woof/'
+```
+
+- to search for more than one pattern we use: `'dog[a-z]*|woof[a-z]*'`, but it needs the extended regExp flag, in terminal as:
+
+```sh
+./translate.sh kitty_ipsum_1.txt | grep --color -E 'dog[a-z]*|woof[a-z]*'
+```
+
+- becaues our script didn't include the global regExp flag, the word: `meowzer` didn't match, so we add the `g` flag in our script file, **NOTICE**: each pattern needs that flag😆
+- now to make it matches the `meowzer` better, we use the `|` inside the sed regExp `meow` pattern to be as: `'s/meow|meowzer/woof/g'`
+
+```sh
+# in script
+cat $1 | sed -E 's/catnip/dogchow/g; s/cat/dog/g; s/meow|meowzer/woof/g'
+```
+
+- after that we check both cat|meow and dog|woof with our `file arg | grep pattern` method
+
+```sh
+# test both files with this in terminal
+./translate.sh kitty_ipsum_1.txt | grep --color -E 'dog[a-z]*|woof[a-z]*'
+./translate.sh kitty_ipsum_1.txt | grep --color -E 'meow[a-z]*|cat[a-z]*'
+
+./translate.sh kitty_ipsum_2.txt | grep --color -E 'dog[a-z]*|woof[a-z]*'
+./translate.sh kitty_ipsum_2.txt | grep --color -E 'meow[a-z]*|cat[a-z]*'
+```
+
+- our script is finished! we need to save output into the new `doggy_ipsum_1.txt` file, as:
+
+```sh
+# redirect the stdout of translating cat_1 file to doggy_1 file
+./translate.sh kitty_ipsum_1.txt > doggy_ipsum_1.txt
+# don't use the pipe method with grep here! it's gonna be useless
+```
+
+- we can use this `diff` command to compare between files in terminal, see its pseudo code: `diff <file_1> <file_2>`
+- do it with `kitty_1` and `doggy_1`
+
+```sh
+diff kitty_ipsum_1.txt doggy_ipsum_1.txt
+# it returns what doesn't match
+# check its manual, 🔴 if it's long, Press enter until you have seen the whole manual 🔴
+```
+
+- use the coloring difference, making red `lines that aren't in the second file`, green `lines are what they were replaced with`.
+- line numbers are above each section
+
+---
+
+- create doggy_2 as in prior one
+
+```sh
+./translate.sh kitty_ipsum_2.txt > doggy_ipsum_2.txt
+```
+
+- view changes:
+
+```sh
+diff --color kitty_ipsum_2.txt doggy_ipsum_2.txt
+```
+
+PROJECT'S DONE AT 11:03 AM 8/21/2023
+
+- It was a real challenge to me, and a lot of new methods
+
+## 9.Building a Bike Rental Shop
+
+build an interactive Bash program that stores rental information for your bike rental shop using PostgreSQL.
+
+- this project will have a database, and a bash script to interact with it.
+- connect to the psql as in prior projects
+
+```sh
+psql --username=freecodecamp --dbname=postgres
+```
+
+- I'll put basic database setting into `bikes.sql` file as in prior projects
+- after we created a DB and its 3 tables, connected 2 into the first one as fKeys, and appended 9 columns to bikes table, now we'll interact with scripting
+- split if you didn't! then create `bike-shop.sh` in project DIR
+
+```sh
+touch bike-shop.sh
+chmod +x bike-shop.sh
+echo '#!/bin/bash' > bike-shop.sh # it wasn't working, because of the double quotes, should be single quotes
+```
+
+- inside the script file do the following:
+
+```sh
+
+echo -e "\n~~~~~ Bike Rental Shop ~~~~~\n"
+
+# create a function named: MAIN_MENU
+MAIN_MENU() {
+  echo 'How may I help you?'
+  echo -e "\n1. Rent a bike\n2. Return a bike\n3. Exit"
+  read MAIN_MENU_SELECTION
+}
+MAIN_MENU
+RENT_MENU() {
+  echo 'Rent Menu'
+}
+RENT_MENU
+# check the file, it will have everything inside!
+```
+
+- after we set a function for each option that user have, we need to get what option he picks, so user submits in `main menu`, and we take them to proper `sub-menu`
+- we can use `case` statement for that! an Example:
+
+```sh
+case EXPRESSION in
+  PATTERN) STATEMENTS ;;
+  PATTERN) STATEMENTS ;;
+  PATTERN) STATEMENTS ;;
+  *) STATEMENTS ;;
+esac
+```
+
+- we want the `$MAIN_MENU_SELECTION` variable to be the expression
+- we expect it to be a `1`, `2`, or `3` for our various menus. the `*` is for when anything else is entered ,as:
+
+```sh
+case $MAIN_MENU_SELECTION in
+  1) RENT_MENU ;;
+  2) RETURN_MENU ;;
+  3) EXIT ;;
+  *) MAIN_MENU ;;
+esac
+```
+
+- we can add an argument when user picks `*`, as this:
+
+```sh
+FUNCTION_CALL "<argument_message>"
+# real example:
+*) MAIN_MENU "Please enter a valid option." ;;
+```
+
+- now, we'll add the PSQL variable below the shebang to get bikes available
+
+```sh
+PSQL="psql -X --username=freecodecamp --dbname=bikes --tuples-only -c"
+# to be able to use it as in prior projects -> $($PSQL "<query_here>")
+```
+
+- in the else -> # display available bikes -> echo "$AVAILABLE_BIKES"
+- instead of printing the output directly, pipe the output into a while loop that reads each line. see the pseudo for it:
+
+```sh
+echo "$AVAILABLE_BIKES" | while read <VAR_1> <VAR_2> <VAR_3> <VAR_4> <VAR_5>
+do
+  <STATEMENTS>
+done
+```
+
+- it'll read the availableVar into 5 vars. each var being the next word in the line.
+- those variables are same as when we read with separating each section with its comma in the worldCup project, as: `cat games.csv | while IFS="," read YEAR ROUND NAME` etc.
+- it's mapping, and it's extremely important in programming!
+- we checking `[[ a1 =~ [0-9] ]]; echo $?` it'll return 0, because its subsequent has matched, with 1
+- to isolate the results to match only regExp pattern, we use: `^` mark, The `^` signifies the start of the pattern, and `$` means the end. as: `[[ a1 =~ ^[0-9]$ ]]; echo $?`
+- `11` didn't match, because we didn't add a flag for reading more than 1 character. so add: `+` after `[0-9]`, as: `^[0-9]+$`
+- so our mathcing test in terminal will be:
+
+```sh
+[[ 11 =~ ^[0-9]+$ ]]; echo $?
+```
+
+- to make not a number we use the exclamation mark `!` in front of the pattern as: [[ ! 11 =~ ^[0-9]+$ ]]
+- after we checked the usages of first option, renting a bike, we set all bikes to available statement, with `UPDATE bikes SET available = true WHERE available = false;`
+- the first customer was added in the script, picking a bike, then adding the number `555-5555`, next `Me` as a name.
+- so we need to put the picked out bike into rentals table, and make its available as false in bikes table!
