@@ -1543,4 +1543,12 @@ echo "$(echo '   M e   ' | sed -E 's/^ *| *$//g')." # mentors mistakenly didn't 
 SELECT * FROM bikes INNER JOIN rentals USING(bike_id) INNER JOIN customers USING(customer_id);
 ```
 
+Course Is Done In: **6:47 PM 8/23/2023**
+
+## 10. Salon Appointment Scheduler
+
+THIS PROJECT IS REQUIRED TO OBTAIN THE DB CERTIFICATION
+
+- For this project, you will create an interactive Bash program that uses PostgreSQL to track the customers and appointments for your salon.
+- Important: After you pass all the project tests, save a dump of your database into a `salon.sql` file, as well as your `salon.sh` file, so you can complete step 2. There will be instructions how to do that within the virtual machine.
 - 
