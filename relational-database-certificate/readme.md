@@ -1512,3 +1512,35 @@ done
 - after we checked the usages of first option, renting a bike, we set all bikes to available statement, with `UPDATE bikes SET available = true WHERE available = false;`
 - the first customer was added in the script, picking a bike, then adding the number `555-5555`, next `Me` as a name.
 - so we need to put the picked out bike into rentals table, and make its available as false in bikes table!
+- a great way of removing `|` from a SQL result, is to use regExp as this: `echo '28 | Mountain' | sed 's/ |//'` it'll become: `28 Mountain`🔴⚠️⚠️that solves the issue of printing columns when user asks for available bikes⚠️⚠️🔴
+- What you put the in subshell (`$(...)`) will be executed, and the result of it will replace the subshell. as: `BIKE_INFO_FORMATTED=$(echo $BIKE_INFO | sed 's/ |/"/')`
+- 🔴view `:72-76` in bike-shop.sh to see how to format text as professionals
+- the pattern `sed 's/^ *//g'` means that search for string starts with space, and ends with space, with 0 or more characters -> `*`, and `g` makes it replaceAll, `^` for starting, and if `$` exists, it means ending!
+- some examples:
+
+```sh
+echo "$(echo '   M e   ' | sed 's/ *$//g')." # |   M e.|
+# meaning. it'll trim all ending spaces
+# putting * before $ means any matching before last one -> '$'
+
+# and this trims initial spaces:
+echo "$(echo '   M e ' | sed 's/^ *//g')." # |M e .|
+```
+
+- `|` in regExp means `or` operator
+- use it to trim precede and after spaces:
+
+```sh
+echo "$(echo '   M e   ' | sed 's/^ *|*$//g')."
+# It didn't work, because of not using extended
+echo "$(echo '   M e   ' | sed -E 's/^ *| *$//g')." # mentors mistakenly didn't add space preceding last *
+```
+
+- so, all that suffer was just to trim the string😲,
+- in second prompt we'll inner join all tables together to get rental customer when tending to return a bike, as:
+
+```sh
+SELECT * FROM bikes INNER JOIN rentals USING(bike_id) INNER JOIN customers USING(customer_id);
+```
+
+- 
