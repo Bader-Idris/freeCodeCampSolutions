@@ -1566,4 +1566,26 @@ PSQL="psql -U postgres -d salon -t -c"
 
 you will learn how to edit files in the terminal with Nano while building a castle.
 
-- 
+- Type `nano castle.sh` to access tended file in nano. without installing anything, it worked, it's a standard text edit in many linux distributions
+- these are some popular edits that linux supports, and might have installed if nano isn't existing: `Vi/Vim or Emacs`
+- to `save/write-out` press: `control + o` after modifying the file. it'll ask about fileName, leave it as is.
+- press `control + x` to exit nano
+- we can run that file without providing shebang with `bash <fileName>` command, in the terminal as well. as: `bash castle.sh`
+- You can use `control + k` to "cut" and `control + u` to "uncut", or paste, a line. when done write out with: `control + o` to save changes
+- now, we're gonna draw a castle to the terminal 😋😋
+- because git nano, is so stupid, use WLS debian or ubuntu
+
+```sh
+echo "
+|                    |
+|                    |
+|                    |
+|                    |
+|                    |
+|____________________|
+"
+```
+
+- the `^` means control at the button of the guide-line panel
+- rerun it with `bash castle.sh`
+-

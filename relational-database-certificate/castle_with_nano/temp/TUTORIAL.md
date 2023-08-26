@@ -223,7 +223,7 @@ echo "
 
 ### 150.1
 
-Add another story to your castle above the ground level that has two more vertical bars. Each bar should be above your existing bars so you need spaces in between them. It should look like this:
+Add another storey to your castle above the ground level that has two more vertical bars. Each bar should be above your existing bars so you need spaces in between them. It should look like this:
 
 ```
 |                    |
