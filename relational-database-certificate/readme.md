@@ -1551,4 +1551,19 @@ THIS PROJECT IS REQUIRED TO OBTAIN THE DB CERTIFICATION
 
 - For this project, you will create an interactive Bash program that uses PostgreSQL to track the customers and appointments for your salon.
 - Important: After you pass all the project tests, save a dump of your database into a `salon.sql` file, as well as your `salon.sh` file, so you can complete step 2. There will be instructions how to do that within the virtual machine.
+- **Notice** 🔴∵🔴 `-t` or `--tuples-only` in query is extremely important, I wasted hours of testing because i didn't use it. When you use `-z` without putting `-t` in the `PSQL` var, it'll always be not null, at least as: `(0 rows)`
+- so make your `PSQL` similar to this:
+
+```sh
+PSQL="psql -U postgres -d salon -t -c"
+```
+
+- the course is easy, for an Express & JS developer, although some string issues as above were tedious.
+- Finished at: **6:14 PM 8/26/2023**
+- don't forget to dump the file for providing the project.
+
+## 11. Building a Castle with Nano
+
+you will learn how to edit files in the terminal with Nano while building a castle.
+
 - 
