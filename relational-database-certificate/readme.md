@@ -1577,15 +1577,150 @@ you will learn how to edit files in the terminal with Nano while building a cast
 
 ```sh
 echo "
+Welcome to my castle
+"
+
+echo "
+ /\                /\ 
+/  \              /  \ 
+|  |______________|  |
 |                    |
+|   []    []    []   |
 |                    |
-|                    |
-|                    |
-|                    |
-|____________________|
+|         __         |
+|________|  |________|
 "
 ```
 
 - the `^` means control at the button of the guide-line panel
 - rerun it with `bash castle.sh`
--
+- `M` for meta down in nano, means `meta` a key that doesn't exist in major keyboards. in `OSX` mac machines, it means `escape`, and in other OSs it means `Alt`.
+- when adding this `/  \              /  \`, and what's above it, it doesn't work properly when running the file, we need to  add a `space` to prevent that storm😆, at the end as this, but replace each `x` with a space
+
+```sh
+ /\                /\x
+/  \              /  \x
+```
+
+## 12. Building an SQL Reference Object With Git
+
+In this 240-lesson course, you will learn how Git keeps track of your code by creating an object containing commonly used SQL commands.
+
+- we created a `sql_reference` dir for handling version control with git.
+- initially: turn that DIR into a git repo with: `git init`, from its direction.
+- list hidden files with: `ls -a`, to see that repo
+- check status, as Osama taught you, it will be your best friend: `git status`
+- `main/master` is a common branch to keep tracking of production code.
+- You can create and go to a new branch with `git checkout -b new_branch`. The `-b` stands for "branch". as: `git checkout -b main`
+- check the status, it'll appear thy new 🌿
+- after creating `README.md`, check `status`, it will be: `Untracked`, meaning: not added to git yet. First you need to add it to the staging area, `git add file_name`, that'll make it ready for commit
+- after we created: `touch sql_reference.json`, we move it from `untracked` to `staging` area, as before: `git add sql_reference.json`
+- to commit them, we use `git commit -m "msg"`, the flag `-m` stands for `message`, you can see the commit msg with: `git log` to check its content
+- If the message is wrong, enter `git reset HEAD~1`, then `git add .`, and then you can try to make the commit again
+- any commit made will make anything in staging area added to git history.
+
+> after committing, to see the history type: `git log`
+> it will write out: `username`, `email`, `date`, `commit hash`
+
+- make sure to put an empty line at the end of the file.
+- make file's content looks like:
+
+```json
+{
+  "database": {
+    "create": "CREATE DATABASE database_name;"
+  }
+}
+
+```
+
+- the `status` will be <span style="color:#db6a6a;">modified</span> now. which is unStaged.
+- to check the difference use:
+
+```bash
+git diff
+# lines with + means new added lines
+```
+
+- then: `git add sql_reference.json`. they're staged and ready for committing. do it with {msg:`feat: add create database reference`}
+
+> Commit messages often start with `fix:` or `feat:`, among others, to help people understand what your commit was for.
+
+- check its history with `git log`, newest will be at the top.
+- after making the json file as 👇, we see one line removed and two are created, add them to the `staging` area, then commit it with: `feat: add drop database reference`
+
+```json
+{
+  "database": {
+    "create": "CREATE DATABASE database_name;",
+    "drop":"DROP DATABASE database_name;"
+  }
+}
+
+```
+
+> Try to avoid committing in thy `main` branch, see current branch with `git branch`
+
+- you can create a branch with: `git branch branch_name`, in often branches starts with `fix/` or `feat/` without spaces after the forward slash.
+
+> add this branch: **feat/add-create-table-reference**.
+
+```sh
+git branch feat/add-create-table-reference
+```
+
+- that new branch is a clone of the main one. it'll have same code and commit history.
+
+> To switch to a branch use: **git checkout branch_name**
+
+- After checking changes with that code: `*` means current branch
+- Now, we'll make this branch for what its name is, then merge it to main one, because it's not common to make main branch for committing
+- add "table" along side "database" one, as:
+
+```json
+{
+  "database": {
+    "create": "CREATE DATABASE database_name;",
+    "drop": "DROP DATABASE database_name;"
+  },
+  "table": {
+    "create": "CREATE TABLE table_name;"
+  }
+}
+
+```
+
+- call thy best friend, then `git diff`, then add to staging area, then commit this msg: `feat: add create table reference`, then check history with: `git log`.
+- because of difficult to see commits after getting longer, we use: `--oneline` with same code as:
+
+> git log --oneline: ⚠️one line not online⚠️
+
+- change branch with: `git checkout` to `main` one
+- ⚠️changing to other branches will remove committed in other branches⚠️, we see with history that 3 comments are committed on this main branch, and 4 on prior one
+
+> Use **git merge branch_name** to bring changes from other specific branch as the **feat** one.
+
+- use this: `git merge feat/add-create-table-reference`
+- now after safely importing data from `feat/` branch, we can delete it with:👇 -d -> delete
+
+> **git branch -d branch_name**
+
+- so, do the following: `git branch -d feat/add-create-table-reference`
+- now: create and go to new branch named: `feat/add-drop-table-reference`. `-b` -> `branch`
+
+```shell
+git checkout -b feat/add-drop-table-reference
+```
+
+- after adding the drop key as👇, check status, then diff, then add it to stage. then commit it with: `feat: add drop table reference`
+
+```json
+// put in "table":{
+  "drop":"DROP TABLE table_name;"
+// }
+```
+
+---
+
+- then switch back to `main` branch. see:1647
+- 
