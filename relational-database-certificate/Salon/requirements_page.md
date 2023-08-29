@@ -1,5 +1,7 @@
 # Instructions
 
+> This page has been updated with little changes, mentors got that in their minds🤪, it took 20 minutes to get their changes and some other bugs, that I didn't see when I created that in my local machine. **Bader** 🥸😎
+
 Follow the instructions and get all the user stories below to pass to finish the project. Create your database by logging in to psql with `psql --username=freecodecamp --dbname=postgres`. You can query the database in your script with `psql --username=freecodecamp --dbname=salon -c "SQL QUERY HERE"`, add more flags if you need to. Be sure to get creative, and have fun!
 
 **Don't forget to connect to your database to add tables after you create it** 😄

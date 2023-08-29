@@ -3,20 +3,19 @@
 PSQL="psql -U freecodecamp -d salon -t -c"
 
 echo -e "\n~~~~~ MY SALON ~~~~~\n"
+  echo -e 'Welcome to My Salon, how can I help you?\n'
 MAIN_MENU() {
-  if [[ $1 ]]; then
-    echo -e "\n$1"
-  fi
-  echo 'How may I help you?'
-  echo -e "\n1. cut\n2. color\n3. perm\n4. style \n5. trim"
-  read MAIN_MENU_SELECTION
-  case $MAIN_MENU_SELECTION in
+  echo -e "1) cut\n2) color\n3) perm\n4) style \n5) trim"
+  read SERVICE_ID_SELECTED
+  case $SERVICE_ID_SELECTED in
   1) CUT ;;
   2) COLOR ;;
   3) PERM ;;
   4) STYLE ;;
   5) TRIM ;;
-  *) MAIN_MENU "I could not find that service. What would you like today?" ;;
+  *)
+    echo -e "\nI could not find that service. What would you like today?"
+    MAIN_MENU ;;
   esac
 }
 CUT() {
@@ -49,7 +48,7 @@ PHONE_TXT() {
   fi
 }
 APPOINTMENT_TIME() {
-  SERVICE_NAME=$($PSQL "SELECT name FROM services WHERE service_id = $MAIN_MENU_SELECTION")
+  SERVICE_NAME=$($PSQL "SELECT name FROM services WHERE service_id = $SERVICE_ID_SELECTED")
   echo -e "\nWhat time would you like your $(echo $SERVICE_NAME | sed 's/ |/"/'), $(echo $CUSTOMER_NAME | sed 's/ |/"/')."
 
   while read SERVICE_TIME && [[ -z $SERVICE_TIME ]]; do
@@ -57,7 +56,7 @@ APPOINTMENT_TIME() {
   done
 
   CUSTOMER_ID=$($PSQL "SELECT customer_id FROM customers WHERE phone = '$CUSTOMER_PHONE'")
-  INSERT_APPOUNTMENT_RESULT=$($PSQL "INSERT INTO appointments(service_id, customer_id, time) VALUES($MAIN_MENU_SELECTION, $CUSTOMER_ID, '$SERVICE_TIME')")
+  INSERT_APPOUNTMENT_RESULT=$($PSQL "INSERT INTO appointments(service_id, customer_id, time) VALUES($SERVICE_ID_SELECTED, $CUSTOMER_ID, '$SERVICE_TIME')")
   echo -e "\nI have put you down for a $(echo $SERVICE_NAME | sed 's/ |/"/') at $(echo $SERVICE_TIME | sed 's/ |/"/'), $(echo $CUSTOMER_NAME | sed 's/ |/"/')."
 }
 MAIN_MENU

@@ -1722,5 +1722,81 @@ git checkout -b feat/add-drop-table-reference
 
 ---
 
-- then switch back to `main` branch. see:1647
-- 
+- then switch back to `main` branch. see:1647, don't forget it doesn't appear yet. ->  view branches -> then merge prior to current with `git merge priorBranch`, then delete prior branch with `git branch -d branchName`
+
+> The process is to create a branch, make the changes you want, commit them, and then merge the changes into branch you started on.
+
+- do them here:
+
+```sh
+git checkout -b feat/add-column-references
+:'
+# this is in json file
+"column": {
+  "add":"ALTER TABLE table_name ADD COLUMN column_name;"
+}
+'
+git diff
+# add all with . instead of typing the name of each on its own
+git add .
+git commit -m "feat: add column reference"
+git log --oneline
+```
+
+- SQL syntax has error. so, switch into `main` branch, any branch we create will clone branch you're on. create 👇
+
+```sh
+# we wanna fix that () tabling
+git checkout -b fix/create-table-syntax
+# add () for table Fn
+:'
+"create": "CREATE TABLE table_name();",
+'
+git add . # or git add sql_reference.json
+git commit -m "fix: create table syntax"
+git checkout main
+git merge fix/create-table-syntax
+git branch -d fix/create-table-syntax
+```
+
+- after fixing that sql syntax switch back to feat/...
+- when teams work on a codebase simultaneously, you'll see fixes as this, you O `feat/` created this branch and its commit, and another branch fixed the Fn bug, You need to update thy code, before continuing.
+
+> You can't just merge main branch into this subBranch. You need that bug fix commit to be in the same order here, as on `main`.
+
+- so, we need to `rebase` this branch against `main` to do so.
+
+```sh
+git rebase main
+# in windows. because I created this project with its git init, inside another git. when I arrived at rebase. it made a conflict. NEVER DO SO.😋🤪
+```
+
+- sql file should be:
+
+```json
+{
+  "database": {
+    "create": "CREATE DATABASE database_name;",
+    "drop": "DROP DATABASE database_name;"
+  },
+  "table": {
+    "create": "CREATE TABLE table_name();",
+    "drop": "DROP TABLE table_name;"
+  },
+    "column": {
+    "add": "ALTER TABLE table_name ADD COLUMN column_name;",
+    "drop": "ALTER TABLE table_name DROP COLUMN column_name;"
+  }
+}
+
+```
+
+- add a `drop` key to the `column` Obj. with syntax of dropping a column, as:
+
+```json
+"drop": "ALTER TABLE table_name DROP COLUMN column_name;"
+```
+
+- after checking status, and diff. add file to staging area, then commit msg with: `feat: add drop column reference`, then check: `git log --oneline`
+- now, switch to `main` branch, then create a new branch with `-b` named: `feat/add-insert-row-reference`
+1264
