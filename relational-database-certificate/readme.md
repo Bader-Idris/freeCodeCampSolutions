@@ -1798,5 +1798,97 @@ git rebase main
 ```
 
 - after checking status, and diff. add file to staging area, then commit msg with: `feat: add drop column reference`, then check: `git log --oneline`
-- now, switch to `main` branch, then create a new branch with `-b` named: `feat/add-insert-row-reference`
-1264
+- now, switch to `main` branch,
+
+---
+
+- then **pretending you're another coder** create a new branch with `-b` named: `feat/add-insert-row-reference`, then create the following:
+
+```json
+,
+"row": {
+  "insert": "INSERT INTO table_name(columns) VALUES(values);"
+}
+```
+
+- then check status -> diff -> `add .`, commit with msg: `feat: add insert row reference`
+- it's finished, go to `main` branch to be able to merge it.
+
+---
+
+- in `main` branch view branches, then merge it with prior branch: `insert row`. then check the log
+- then switch to `feat/add-column.....`, then update this with `rebase`. YOU SHOULD SEE A CONFLICT🥸 finally how to deal with it!🥲
+
+---
+
+The conflict arose because the first commit you added to this branch changed the same lines as the commit from `main`. So it tried to add the commit, but couldn't because something was already there. There are sections, separated by characters (`<`, `>`, and `=`), that represent the commit you are on (`HEAD`) and the commit that is trying to be added (`feat: add column reference`). Fix the conflict by removing those `<`, `>`, and `=` characters. Then making the JSON object valid again.
+
+- this is how the file looks like with nano:
+
+```json
+{
+  "database": {
+    "create": "CREATE DATABASE database_name;",
+    "drop":"DROP DATABASE database_name;"
+  },
+  "table": {
+    "create": "CREATE TABLE table_name();",
+    "drop":"DROP TABLE table_name;"
+  },
+<<<<<<< HEAD
+  "row": {
+    "insert": "INSERT INTO table_name(columns) VALUES(values);"
+=======
+    "column": {
+    "add":"ALTER TABLE table_name ADD COLUMN column_name;"
+>>>>>>> 3dc3279 (feat: add column reference)
+  }
+}
+
+```
+
+- it should become as:
+
+```json
+{
+  "database": {
+    "create": "CREATE DATABASE database_name;",
+    "drop": "DROP DATABASE database_name;"
+  },
+  "table": {
+    "create": "CREATE TABLE table_name();",
+    "drop": "DROP TABLE table_name;"
+  },
+  "row": {
+    "insert": "INSERT INTO table_name(columns) VALUES(values);"
+  },
+  "column": {
+    "add": "ALTER TABLE table_name ADD COLUMN column_name;"
+  }
+}
+
+```
+
+- the empty line on bottom is important
+
+check the status
+
+It says that you are still in the middle of rebasing and there's one file that needs to be merged yet. Add the file to staging like you would any other commit.
+
+```sh
+# 🔴🔴🔴🔴🔴🔴🔴🔴
+git add sql_reference.json
+# 🔴🔴🔴🔴🔴🔴🔴🔴
+```
+
+- check the status
+
+You fixed the conflicts that arose from trying to add this commit and added them to staging. It says `all conflicts fixed: run "git rebase --continue"`. Run the suggested command to continue the rebase.
+
+1. in my debian it went to commit file, I made a little change in the message to be able to proceed
+
+- log in oneline
+-1492
+
+---
+
