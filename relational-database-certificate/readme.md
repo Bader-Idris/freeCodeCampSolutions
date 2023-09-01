@@ -1887,8 +1887,75 @@ You fixed the conflicts that arose from trying to add this commit and added them
 
 1. in my debian it went to commit file, I made a little change in the message to be able to proceed
 
-- log in oneline
--1492
+---
+
+log in oneline
+
+- You can see the `insert row` commit below the head with two commits, it means it's up to date.
+- git status, git diff, add file to staging area.
+- then commit with: `feat: add rename column reference`
+
+Now, you can see three unique commits to this branch, so we go to `feat/add-insert-row-reference`
+
+- then add this into row key:
+
+```json
+"update": "UPDATE table_name SET column_name = new_value WHERE condition;"
+```
+
+- There has been a mistake ⚠️mentors say! this branch was for the `insert` command, not the `update` one.
+
+> You can put thy changes aside with `stash`. `git stash`.
+
+- uncommitted changes will disappear from the file.
+
+CHECK STATUS, it'll be clean
+
+> **git stash list** is as its name, appears stash lists
+
+it's an array that starts with {0}
+to **bring** the changes **back** use:
+
+```sh
+git stash pop
+# check if there is a list of stash now
+git stash list
+# re-put it in the stash
+git stash
+```
+
+- View a condensed version of the changes in the **latest** stash with `git stash show`.
+- View the full changes of the latest stash with `git stash show -p`. `-p` stands for "patch".
+- You can add the latest stash while keeping it in the list with `git stash apply`. and it will appear the status.
+
+Now, try stash same stashed again, after it's been applied
+it accepts that and there are two indexes now.
+
+- You can use the name at the front of each stash (`stash@{#}`) with many of the stash commands to select one other than the latest one.
+
+> real e.g: **git stash show stash@{1}**
+
+- similarly, to show the full changes of stash@{1} |with patch| do this:
+
+```sh
+git stash show -p stash@{1}
+```
+
+- There's two identical items in your stash. Drop one of them with `git stash drop` or `git stash drop <stash_name>`.
+
+- as: `git stash drop stash@{1}`, then view the list to check it out
 
 ---
 
+- switch to `main` branch. use `checkout`
+- delete the `feat/add-insert-row-reference` branch. with `-d`
+
+> `git branch -d feat/add-insert-row-reference`
+
+- create and checkout feat/add-more-row-references
+- `git checkout -b feat/add-more-row-references`
+- now, pop the stashed changes that are still stashed from the prior branch, with `git stash pop`. the stash will become empty. check it and check diff.
+- then add changes to the staging area. `git add .`
+- then commit with : `feat: add update row reference`
+- then switch to `main` branch, then `git merge feat/add-more-row-references`
+- then switch to `feat/add-column-references`
