@@ -1958,4 +1958,66 @@ git stash show -p stash@{1}
 - then add changes to the staging area. `git add .`
 - then commit with : `feat: add update row reference`
 - then switch to `main` branch, then `git merge feat/add-more-row-references`
-- then switch to `feat/add-column-references`
+- then switch to `feat/add-column-references`, and then `rebase` it against `main` to bring the new commits. You should get a conflict.
+- ⚠️ This conflict is a bit trickier. ⚠️
+- the whole file should look as:
+
+```json
+{
+  "database": {
+    "create": "CREATE DATABASE database_name;",
+    "drop": "DROP DATABASE database_name;"
+  },
+  "table": {
+    "create": "CREATE TABLE table_name();",
+    "drop": "DROP TABLE table_name;"
+  },
+  "row": {
+    "insert": "INSERT INTO table_name(columns) VALUES(values);",
+    "update": "UPDATE table_name SET column_name = new_value WHERE condition;"
+  },
+  "column": {
+    "add": "ALTER TABLE table_name ADD COLUMN column_name;"
+  }
+}
+
+```
+
+- now, check the status. It looks like it was the "add column" commit that had the conflict. Add your changes to staging.
+- with `git add sql_reference.json`.
+- ⚠️continue the rebase statement⚠️ with `git rebase --continue`
+- continue in shell without changing! view the log --oneline
+- then make column as:
+
+```json
+"column": {
+  "add": "ALTER TABLE table_name ADD COLUMN column_name;",
+  "drop": "ALTER TABLE table_name DROP COLUMN column_name;",
+  "rename": "ALTER TABLE table_name RENAME COLUMN column_name TO new_name;",
+  "primary_key": "ALTER TABLE table_name ADD PRIMARY KEY(column_name);"
+}
+```
+
+- then check diff and then add to the staging area, then commit with: `feat: add primary key reference`
+- now, add foreign_key into the file -> column key as: `"foreign_key": "ALTER TABLE table_name ADD FOREIGN KEY(column_name) REFERENCES table_name(column_name);"`
+- then add to stage. then commit with: `feat: add foreign key reference`
+
+---
+
+- go to the `feat/add-more-row-references` branch
+- now add this in the json file:
+
+```json
+// in the row Obj:
+"delete": "DELETE FROM table_name WHERE condition;"
+```
+
+then as in prior steps, check diff, add sql_reference.json ,then commit : `feat: add delete row reference`
+
+- go to `main`, and merge prior branch's stuff. `git merge feat/add-more-row-references`. then delete that merged branch, no need to it. `git branch -d`
+- now, practice fixing to forget adding some names!
+
+---
+
+- create and -b this branch: `fix/add-missing-rename-references`.
+- 2363
