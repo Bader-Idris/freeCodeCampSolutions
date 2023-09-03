@@ -2020,4 +2020,281 @@ then as in prior steps, check diff, add sql_reference.json ,then commit : `feat:
 ---
 
 - create and -b this branch: `fix/add-missing-rename-references`.
-- 2363
+- create this in json for rename SQL DB name:
+
+```js
+// in DB Obj
+"rename": "ALTER DATABASE database_name RENAME TO new_name;"
+```
+
+- as before, check diff, then set to stage! then commit with: `fix: add missing rename database reference`
+
+---
+
+Now, switch to feat/add.... branch
+
+There was a commit to `main` since you last worked on this from when you merged the "add more row references" branch.
+
+- Rebase this branch against `main` so it's up to date and you can finish working on it.
+- THAT'S AN INEVITABLE CONFLICT
+- fix it. their hint final json file, is weird as prior ones🥲 they were adding new lines, and now, they remove them!
+
+```json
+{
+  "database": {
+    "create": "CREATE DATABASE database_name;",
+    "drop": "DROP DATABASE database_name;"
+  },
+  "table": {
+    "create": "CREATE TABLE table_name();",
+    "drop": "DROP TABLE table_name;"
+  },
+  "row": {
+    "insert": "INSERT INTO table_name(columns) VALUES(values);",
+    "update": "UPDATE table_name SET column_name = new_value WHERE condition;",
+    "delete": "DELETE FROM table_name WHERE condition;"
+  },
+  "column": {
+    "add": "ALTER TABLE table_name ADD COLUMN column_name;"
+  }
+}
+
+```
+
+- then after checking the chaos, add to stage!
+- use `git rebase --continue`
+
+---
+
+- in json file make it as:
+
+```json
+{
+  "database": {
+    "create": "CREATE DATABASE database_name;",
+    "drop": "DROP DATABASE database_name;"
+  },
+  "table": {
+    "create": "CREATE TABLE table_name();",
+    "drop": "DROP TABLE table_name;"
+  },
+  "row": {
+    "insert": "INSERT INTO table_name(columns) VALUES(values);",
+    "update": "UPDATE table_name SET column_name = new_value WHERE condition;",
+    "delete": "DELETE FROM table_name WHERE condition;"
+  },
+  "column": {
+    "add": "ALTER TABLE table_name ADD COLUMN column_name;",
+    "drop": "ALTER TABLE table_name DROP COLUMN column_name;",
+    "rename": "ALTER TABLE table_name RENAME COLUMN column_name TO new_name;",
+    "primary_key": "ALTER TABLE table_name ADD PRIMARY KEY(column_name);",
+    "foreign_key": "ALTER TABLE table_name ADD FOREIGN KEY(column_name) REFERENCES table_name(column_name);",
+    "unique": "ALTER TABLE table_name ADD UNIQUE(column_name);"
+  }
+}
+
+```
+
+- then add . ; then commit with: `"feat: add unique reference"`
+
+> To reset a commit that was mistakenly added You have few ways:
+
+You can use the `git reset` command to travel to any point in your commit history.
+
+- do it with the HEAD, as: `git reset HEAD~1`
+- it put undid working in the working tree!
+- check its info with log --oneline, IT'S GONE
+- check status, diff.
+
+> If you used the `--hard` flag with the reset, the changes would have not been added to the working tree and if you used the `--soft` flag, the changes would have been added to the working tree and to staging.
+
+now add them: `git add .`, then commit with: `feat: add unique reference`
+
+Reverting is a good way to undo a commit because you don't lose the commit from the history. You can revert the most recent commit (`HEAD`) with `git revert HEAD`. Do that now.
+
+> **git revert HEAD**
+
+In nano mentors say: you can exit without the need of using write out command:`ctrl + O`, using by using Exit command: `ctrl + X`
+
+view the **log -oneline**
+
+Using revert to undo that commit added another commit that is the exact opposite of it. Enter `git show` into the terminal to see the last commit added (now `HEAD`) and its details.
+
+- Type `git show HEAD~1` to take a look at the details of the original commit that you reverted.
+
+If you look at the bottom of those two messages, it shows the diff. The diff of the revert commit is the exact opposite of the one before it. Effectively, undoing the changes. You've used rebase to update this branch, but you can enter an "interactive" mode to manipulate commits. Type `git rebase --interactive HEAD~2` into the terminal to enter this mode. The `HEAD~2` means you will have a chance to change the last two commits.
+
+in linux it'll open nano, in vscode it opened GitLens Interactive Rebase.
+
+At the top of Nano, you can see the two commits with `pick` next to them. Below them, there's a list of options for working with them. `pick` means that it will use the commits as they were. At the bottom, it says, `d, drop = remove commit`. Replace the word `pick` preceeding your two commits with a `d` to drop them both. When you are done, save the file and exit Nano.
+
+this is how nano file looks like:
+
+```sh
+pick e8787ad feat: add unique reference
+pick 1ba9396 Revert "feat: add unique reference"
+
+# Rebase 458f473..1ba9396 onto 458f473 (2 commands)
+#
+# Commands:
+# p, pick <commit> = use commit
+# r, reword <commit> = use commit, but edit the commit message
+# e, edit <commit> = use commit, but stop for amending
+# s, squash <commit> = use commit, but meld into previous commit
+# f, fixup [-C | -c] <commit> = like "squash" but keep only the previous
+#                    commit's log message, unless -C is used, in which case
+#                    keep only this commit's message; -c is same as -C but
+#                    opens the editor
+# x, exec <command> = run command (the rest of the line) using shell
+# b, break = stop here (continue rebase later with 'git rebase --continue')
+# d, drop <commit> = remove commit
+# l, label <label> = label current HEAD with a name
+# t, reset <label> = reset HEAD to a label
+# m, merge [-C <commit> | -c <commit>] <label> [# <oneline>]
+#         create a merge commit using the original merge commit's
+#         message (or the oneline, if no original merge commit was
+#         specified); use -c <commit> to reword the commit message
+# u, update-ref <ref> = track a placeholder for the <ref> to be updated
+#                       to this position in the new commits. The <ref> is
+#                       updated at the end of the rebase
+#
+# These lines can be re-ordered; they are executed from top to bottom.
+#
+# If you remove a line here THAT COMMIT WILL BE LOST.
+#
+# However, if you remove everything, the rebase will be aborted.
+#
+```
+
+- then check the history with oneline.
+- Enter another `--interactive` rebase that goes back to the `--root` instead of `HEAD~2`. it means the initial commit:
+
+> git rebase --interactive --root
+
+Now, you see the latest at the bottom, and all commits are appearing.
+
+One of the options is: `# r, reword <commit> = use commit, but edit the commit message` replace the initial commit's flag: `pick` with an `r`, then exit!
+
+Git will put you in another Nano instance to reword the commit message. Don't change anything in it yet.
+
+⚠️ There is a problem: each time we reword the commit, its **commit hash** changes! ⚠️
+And when **rebasing interactively** it changes all hashes!
+If you were to try and merge this into `main`, it wouldn't work because they don't share the same history anymore.
+
+So, for this reason, **DON'T DO AN INTERACTIVE REBASE!** where you go back passed commits unique to the branch you are on.
+
+> To fix this Enter: **git rebase main**
+
+view the log with oneLine, *a CONFLICT happened to one commit*
+Go back to the first commit you added to this branch, it's `HEAD~5`. Use: `git rebase --interactive HEAD~5`
+
+conflict in the lesson, whatever :O( I played around with --continue and did something similar! 😎
+
+Squashing commits means that you will take a bunch of commits and turn them into one. This is helpful to keep your commit history clean and something you want try to do. Replace `pick` with an `s` next to all your commits except the one with the message `feat: add column references`. When you are done, save and exit the file. You will find yourself in another instance of Nano. Don't change anything in it yet.
+
+Merge feat/... into it. and remove prior one. check the recent log with `git log -1`
+
+Go to fix/add-missing-rename-references branch
+Update it with rebase
+
+You can view the last `x` number of commits with any number instead of `1`. View the last five commits with the oneline flag. as: `git log -5 --oneline`
+
+it's up to date, add this to table Obj:
+
+```json
+,
+  "rename": "ALTER TABLE table_name RENAME TO new_name;"
+```
+
+The whole json file should be as:
+
+```json
+{
+  "database": {
+    "create": "CREATE DATABASE database_name;",
+    "drop": "DROP DATABASE database_name;",
+    "rename": "ALTER DATABASE database_name RENAME TO new_name;"
+  },
+  "table": {
+    "create": "CREATE TABLE table_name();",
+    "drop": "DROP TABLE table_name;",
+    "rename": "ALTER TABLE table_name RENAME TO new_name;"
+  },
+  "row": {
+    "insert": "INSERT INTO table_name(columns) VALUES(values);",
+    "update": "UPDATE table_name SET column_name = new_value WHERE condition;",
+    "delete": "DELETE FROM table_name WHERE condition;"
+  },
+  "column": {
+    "add": "ALTER TABLE table_name ADD COLUMN column_name;",
+    "drop": "ALTER TABLE table_name DROP COLUMN column_name;",
+    "rename": "ALTER TABLE table_name RENAME COLUMN column_name TO new_name;",
+    "primary_key": "ALTER TABLE table_name ADD PRIMARY KEY(column_name);",
+    "foreign_key": "ALTER TABLE table_name ADD FOREIGN KEY(column_name) REFERENCES table_name(column_name);"
+  }
+}
+
+```
+
+check diff, status, then add to stage!
+commit with: `fix: add missing rename table reference`
+view last 5 logs with oneline: `git log --oneline -5`
+
+we have two commits on this branch:
+
+```git
+357e0cd (HEAD) fix: add missing rename table reference
+399fd1e (bader) feat: add update row reference
+f268958 fix: create table syntax
+dd7b3d0 feat: add drop table reference
+cef2371 feat: add create table reference
+```
+
+that could be squashed with: `git rebase --interactive HEAD~2`, then put `s` instead of `pick`.
+
+there are some bugs with the project!
+go to 3129 in TUTORIAL.md
+
+let's continue in 3218! make the only existing commit the main one
+
+---
+
+That's a nice looking commit history. There's one more thing you should learn. Create and checkout a branch named `feat/add-gitignore`.
+
+create the `.env` in the repo, in terminal: `touch .env`
+
+Now, create `.gitignore` file.
+
+they wanna ignore .env as you practiced and did million times in express projects, by putting file/DIR names inside
+
+after hiding secrets, add . then commit with: `feat: add .gitignore`
+
+now create sample.env, then add the variable name only to help others recognize its names: `SECRET=`
+
+then add it, them commit with: `feat: add sample.env`
+
+then check last 5 logs: `git log -5 --oneline`
+
+The two commits you made to this branch can be squashed. Do an interactive rebase that goes back to all the commits unique to this branch (`HEAD~2`).
+
+when in git messaging add: `feat: add .gitignore and sample.env`
+
+> ⚠️my mistakes were because of making all commits as `s`⚠️ one should be as `r` reword, to be able to put the next commit msg!
+
+switch to main branch, then merge as you're on main, then delete prior one
+
+check `git log --oneline`, then without that flag
+
+> THAT'S THE ONLY USEFUL THING OF ALL OF THIS SUFFER! 🥵
+
+FINALLY, FINAAAAAAAAAAAAAAAAAAAAAAALY
+
+FINISHED IT AT: **5:42 PM 9/3/2023**
+
+---
+---
+---
+
+## 13. Periodic Table Database
+
+This is one of the required projects to earn your certification. For this project, you will create Bash a script to get information about chemical elements from a periodic table database.
