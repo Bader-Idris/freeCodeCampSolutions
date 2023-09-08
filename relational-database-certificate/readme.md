@@ -2298,3 +2298,104 @@ FINISHED IT AT: **5:42 PM 9/3/2023**
 ## 13. Periodic Table Database
 
 This is one of the required projects to earn your certification. For this project, you will create Bash a script to get information about chemical elements from a periodic table database.
+
+solution:
+
+### Part 1: Fix the database
+
+```sql
+-- You should rename the weight column to atomic_mass
+ALTER TABLE properties RENAME COLUMN weight TO atomic_mass;
+
+-- You should rename the `melting_point` column to `melting_point_celsius` and the `boiling_point` column to `boiling_point_celsius`
+ALTER TABLE properties RENAME COLUMN melting_point TO melting_point_celsius;
+-- in sql it can do many, but in psql it can't
+ALTER TABLE properties RENAME COLUMN boiling_point TO boiling_point_celsius;
+
+-- Your `melting_point_celsius` and `boiling_point_celsius` columns should not accept null values
+ALTER TABLE properties ALTER COLUMN melting_point_celsius SET NOT NULL;
+ALTER TABLE properties ALTER COLUMN boiling_point_celsius SET NOT NULL;
+
+-- You should add the `UNIQUE` constraint to the `symbol` and `name` columns from the `elements` table
+ALTER TABLE elements ADD UNIQUE(symbol);
+ALTER TABLE elements ADD UNIQUE(name);
+
+-- Your `symbol` and `name` columns should have the `NOT NULL` constraint
+ALTER TABLE elements ALTER COLUMN symbol SET NOT NULL;
+ALTER TABLE elements ALTER COLUMN name SET NOT NULL;
+
+-- You should set the `atomic_number` column from the `properties` table as a foreign key that references the column of the same name in the `elements` table
+ALTER TABLE properties ADD FOREIGN KEY(atomic_number) REFERENCES elements(atomic_number);
+
+-- You should create a `types` table that will store the three types of elements
+CREATE TABLE types();
+
+-- Your `types` table should have a `type_id` column that is an integer and the primary key
+ALTER TABLE types ADD COLUMN type_id INT PRIMARY KEY;
+
+-- Your `types` table should have a `type` column that's a `VARCHAR` and cannot be `null`. It will store the different types from the `type` column in the properties table
+ALTER TABLE types ADD COLUMN type VARCHAR(25) NOT NULL;
+
+-- You should add three rows to your `types` table whose values are the three different types from the `properties` table
+-- To get them I used: select distinct(type) from properties;
+-- now I create a sequence and set it to nextval of type_id to increment automatically
+CREATE SEQUENCE types_type_id_seq;
+ALTER TABLE types ALTER COLUMN type_id SET DEFAULT nextval('types_type_id_seq');
+ALTER SEQUENCE types_type_id_seq OWNED BY types.type_id;
+-- now this is gonna work! 👇
+INSERT INTO types(type) VALUES('metal'),
+('metalloid'),
+('nonmetal');
+
+-- Your `properties` table should have a `type_id` foreign key column that references the `type_id` column from the `types` table. It should be an `INT` with the `NOT NULL` constraint
+ALTER TABLE properties ADD COLUMN type_id INT, ADD FOREIGN KEY (type_id) REFERENCES types (type_id);
+```
+
+Now, I'll add these three with scripting:🤯 isn't it
+
+```sh
+#!/bin/bash
+
+PSQL="psql -U freecodecamp -d periodic_table -t -A -c"
+# -A, --no-align unaligned table output mode
+
+# Fetch the rows from the table
+PROPERTIES_ROWS=$($PSQL "SELECT type FROM properties")
+# Loop through the rows
+while IFS='|' read -r TYPE; do
+  # Check the condition and update column1 if needed
+  if [[ "$TYPE" == "metal" ]]; then
+    TYPES_ID=$($PSQL "SELECT type_id FROM types WHERE type = '$TYPE'")
+    $PSQL "UPDATE properties SET type_id = $TYPES_ID WHERE type = '$TYPE'"
+  fi
+  if [[ "$TYPE" == "metalloid" ]]; then
+    TYPES_ID=$($PSQL "SELECT type_id FROM types WHERE type = '$TYPE'")
+    $PSQL "UPDATE properties SET type_id = $TYPES_ID WHERE type = '$TYPE'"
+  fi
+  if [[ "$TYPE" == "nonmetal" ]]; then
+    TYPES_ID=$($PSQL "SELECT type_id FROM types WHERE type = '$TYPE'")
+    $PSQL "UPDATE properties SET type_id = $TYPES_ID WHERE type = '$TYPE'"
+  fi
+
+done <<< "$PROPERTIES_ROWS"
+```
+
+I put it in `type_id_looping.sh` file.
+
+- then make them not null, and continue
+
+```sql
+ALTER TABLE properties ALTER COLUMN type_id SET NOT NULL;
+-- Each row in your `properties` table should have a `type_id` value that links to the correct type from the `types` table; ✅ with prior steps
+```
+
+- You should capitalize the first letter of all the `symbol` values in the `elements` table. Be careful to only capitalize the letter and not change any others; I'll create another shell file for it `capitalize_symbol.sh`
+-
+
+### Part 2: Create your git repository
+
+Hi
+
+### Part 3: Create the script
+
+Hi
