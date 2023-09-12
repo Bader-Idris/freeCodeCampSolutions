@@ -2304,6 +2304,8 @@ solution:
 ### Part 1: Fix the database
 
 ```sql
+-- psql --username=freecodecamp --dbname=periodic_table
+
 -- You should rename the weight column to atomic_mass
 ALTER TABLE properties RENAME COLUMN weight TO atomic_mass;
 
@@ -2390,6 +2392,28 @@ ALTER TABLE properties ALTER COLUMN type_id SET NOT NULL;
 ```
 
 - You should capitalize the first letter of all the `symbol` values in the `elements` table. Be careful to only capitalize the letter and not change any others; I'll create another shell file for it `capitalize_symbol.sh`
+
+```sh
+#!/bin/bash
+
+PSQL="psql -U freecodecamp -d periodic_table -t -A -c"
+
+SYMBOL_ROWS=$($PSQL "SELECT symbol FROM elements")
+while IFS='|' read -r ORIGINAL; do
+  MODIFIED=$(echo "$ORIGINAL" | awk '{ print toupper(substr($0, 1, 1)) substr($0, 2) }')
+  $PSQL "UPDATE elements SET symbol = '$MODIFIED' WHERE symbol = '$ORIGINAL'"
+done <<< "$SYMBOL_ROWS"
+```
+
+- You should remove all the trailing zeros after the decimals from each row of the `atomic_mass` column. You may need to adjust a data type to `DECIMAL` for this. The final values they should be are in the `atomic_mass.txt` file.
+
+```SQL
+-- initially, there are 2 trailing decimals in all, so change its 6 into 4
+ALTER TABLE properties ALTER COLUMN atomic_mass TYPE numeric(9,4);
+-- then remove the trailing with less than that
+
+```
+
 -
 
 ### Part 2: Create your git repository
