@@ -2411,7 +2411,11 @@ done <<< "$SYMBOL_ROWS"
 -- initially, there are 2 trailing decimals in all, so change its 6 into 4
 ALTER TABLE properties ALTER COLUMN atomic_mass TYPE numeric(9,4);
 -- then remove the trailing with less than that
+-- ⚠️🔴⚠️🔴 didn't work yet!
 
+
+-- You should add the element with atomic number `9` to your database. Its name is `Fluorine`, symbol is `F`, mass is `18.998`, melting point is `-220`, boiling point is `-188.1`, and it's a `nonmetal`
+insert into elements(atomic_number, symbol, name) values(9, 'F', 'Fluorine') -- connect other tables with it to be able to add the rest
 ```
 
 -
